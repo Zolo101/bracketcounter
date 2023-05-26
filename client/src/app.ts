@@ -1,4 +1,5 @@
 // @ts-ignore
+import "./loader.js"
 
 google.charts.load('current', {
     'packages': ['corechart']
@@ -53,7 +54,10 @@ function init() {
 
     // Create WebSocket connection.
     try {
-        socket = new WebSocket('ws' + (window.location.protocol == "https:" ? "s" : "") + '://' + window.location.hostname + '/socket');
+        // let hostname = 'ws' + (window.location.protocol == "https:" ? "s" : "") + '://' + window.location.hostname + '/socket'
+        let hostname = "ws://localhost:3001"
+        console.log(hostname)
+        socket = new WebSocket(hostname);
     } catch(e) {
         console.log(e)
         statusElement.textContent = errorMessage

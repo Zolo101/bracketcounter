@@ -1,0 +1,65 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    @apply h-[99%] m-0 p-0 bg-gray-800;
+}
+
+@layer base {
+    h1, h2 {
+        font-size: revert;
+    }
+
+    ul, ol {
+        list-style: revert;
+        margin: revert;
+        padding: revert;
+    }
+
+    a {
+        text-decoration: revert;
+    }
+}
+
+html {
+    @apply text-sm;
+    font-family: Roboto, sans-serif;
+}
+
+textarea {
+    @apply bg-green-950 text-white border-0;
+}
+
+
+a {
+    @apply text-gray-400 no-underline;
+}
+
+a:visited {
+    @apply text-gray-600;
+}
+
+button {
+    @apply border-0 bg-gray-900 text-white p-0.5 border-r-4 appearance-none;
+    font-family: Roboto, sans-serif;
+}
+
+.v2s {
+    background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(189,0,0,0) 75%, rgba(255,0,0,0.7) 85%);
+}
+
+.v2e {
+    background: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(189,0,0,0) 75%, rgba(255,0,0,0.7) 85%);
+}
+
+@media (orientation: landscape) and (max-device-height: 800px), (orientation: portrait) and (max-device-width: 800px) {
+    #postable, #wikiapostable, #share {
+        @apply hidden;
+    }
+    #graph {
+        @apply !h-4/5;
+    }
+}
