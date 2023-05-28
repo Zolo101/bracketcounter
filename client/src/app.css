@@ -43,7 +43,8 @@ a:visited {
 }
 
 button {
-    @apply border-0 bg-gray-900 text-white p-0.5 border-r-4 appearance-none;
+    @apply bg-gray-600 p-5 rounded shadow;
+    /*@apply border-0 bg-gray-900 text-white p-0.5 border-r-4 appearance-none;*/
     font-family: Roboto, sans-serif;
 }
 
