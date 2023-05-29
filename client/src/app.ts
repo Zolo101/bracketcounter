@@ -1,34 +1,32 @@
+// import "./loader.js"
 // @ts-ignore
-import "./loader.js"
 
-google.charts.load('current', {
-    'packages': ['corechart']
-});
-google.charts.setOnLoadCallback(privacyHandler);
-const privacyElement: HTMLDivElement = <HTMLDivElement> document.querySelector("#privacypolicy")!
+// google.charts.load('current', {
+//     'packages': ['corechart']
+// });
+// google.charts.setOnLoadCallback(privacyHandler);
+import { writable } from "svelte/store";
+import type { SocketMessageData } from "./socket";
+import type { DesktopTree } from "./statmodule";
+import { DesktopDirection } from "./statmodule";
 
-function privacyHandler() {
-    if (localStorage.getItem("privacyVersion") == "1") {
-        privacyElement.style.display = "none"
-        init()
-    } else {
-        privacyElement.style.display = "block"
-    }
-}
-
-function privacyAccept() {
-    localStorage.setItem("privacyVersion", "1");
-    privacyElement.style.display = "none"
-    init()
-}
-document.querySelector("#accept")?.addEventListener("click", privacyAccept)
+export const latestMessage = writable<SocketMessageData>();
+export const desktop = writable<DesktopTree>(writable({parent: false, depth: 0}));
+export const statModules = [
+    "Graph",
+    "Bar",
+    "Pie Chart",
+    // "Boredom Repellant",
+    // "BFDI Quiz",
+    // "BFDIA 5b"
+]
 
 function numberWithCommas(x: number) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
 function ordinal(d: number): string {
-return d+(31==d||21==d||1==d?"st":22==d||2==d?"nd":23==d||3==d?"rd":"th")
+    return d+(31==d||21==d||1==d?"st":22==d||2==d?"nd":23==d||3==d?"rd":"th")
 }
 
 let customTicks: number[] = []
@@ -36,16 +34,16 @@ for (let i = 0; i < 60; i++) {
     customTicks.push(921*i);
 }
 
-const statusElement: HTMLDivElement = <HTMLDivElement> document.querySelector("#status")!;
-const postableElement: HTMLTextAreaElement = <HTMLTextAreaElement> document.querySelector("#postable")!;
-const wikiaElement: HTMLDivElement = <HTMLDivElement> document.querySelector("#wikiapostable")!;
+// const statusElement: HTMLDivElement = <HTMLDivElement> document.querySelector("#status")!;
+// const postableElement: HTMLTextAreaElement = <HTMLTextAreaElement> document.querySelector("#postable")!;
+// const wikiaElement: HTMLDivElement = <HTMLDivElement> document.querySelector("#wikiapostable")!;
 
 let socket: WebSocket | null = null;
 let retries = 0;
 const errorMessage = "Sorry, the connection to the Bracketcounter service has failed. Try reloading the page or check that voting has not ended yet."
 
-function init() {
-    const chart = new google.visualization.BarChart(document.getElementById('graph')!);
+export function init() {
+    // const chart = new google.visualization.BarChart(document.getElementById('graph')!);
     if (socket != null && socket.readyState == 1 || retries > 5) return;
     if (socket != null ) socket.close(3001, "Reloading"); // to ensure no multiple connections
     retries ++;
@@ -60,8 +58,8 @@ function init() {
         socket = new WebSocket(hostname);
     } catch(e) {
         console.log(e)
-        statusElement.textContent = errorMessage
-        statusElement.style.color = "yellow"
+        // statusElement.textContent = errorMessage
+        // statusElement.style.color = "yellow"
     }
 
     let translations: { [contestant: string]: string } = {};
@@ -76,8 +74,8 @@ function init() {
 
     socket!.addEventListener('error', function(event) {
         console.log(event)
-        statusElement.textContent = errorMessage
-        statusElement.style.color = "yellow"
+        // statusElement.textContent = errorMessage
+        // statusElement.style.color = "yellow"
         init()
     })
 
@@ -89,6 +87,8 @@ function init() {
     socket!.addEventListener('message', function(event) {
         retries = 0;
         let ob = JSON.parse(event.data);
+        latestMessage.set(ob)
+        console.log(ob)
         let status = ob.status;
         let config = ob.config;
         for (const contestant in config.contestants) {
@@ -140,7 +140,7 @@ function init() {
 |${colorPrefix}${percent2}%${colorSuffix}`;
 
         }
-        let data = google.visualization.arrayToDataTable(table);
+        // let data = google.visualization.arrayToDataTable(table);
         let updateDate = new Date(status.updateDate);
         wikiaPostable += '\n|}';
         let minutesLeft = ((status.deadline - +(updateDate)) / 60000);
@@ -149,19 +149,20 @@ function init() {
         let secsLeft = Math.floor(((minutesLeft % 60) * 60) % 60);
         let timeString = `${hoursLeft}h ${onlyMinsLeft}m ${secsLeft}s left`;
         let statusString = `${status.done ? "" : "🕒Recounting"} Video ID: ${status.id} Comments read: ${status.comments} Votes: ${status.validVotes} Last update: ${updateDate.toLocaleTimeString()} ${config.deadlineHours == 0 ? "" : timeString}`;
-        statusElement.innerText = statusString;
-        discordPostable += `/************************/
-Comments            ${status.comments}
-Votes               ${status.validVotes}
-/************************/
-Avg Votes Per Char  ${status.validVotes / sortedKeys.length}
-#1st-#2nd Margin    ${ob.votes[sortedKeys[0]] - ob.votes[sortedKeys[1]]} [${(ob.votes[sortedKeys[1]] / ob.votes[sortedKeys[0]] * 100).toFixed(1)}%]
-#${ordinal(sortedKeys.length-1)}-#${ordinal(sortedKeys.length)} Margin    ${ob.votes[sortedKeys[sortedKeys.length-2]] - ob.votes[sortedKeys[sortedKeys.length-1]]} [${(ob.votes[sortedKeys[sortedKeys.length-1]] / ob.votes[sortedKeys[sortedKeys.length-2]] * 100).toFixed(1)}%]
-#1st-#${ordinal(sortedKeys.length)} Margin    ${ob.votes[sortedKeys[0]] - ob.votes[sortedKeys[sortedKeys.length-1]]} [${(ob.votes[sortedKeys[sortedKeys.length-1]] / ob.votes[sortedKeys[0]] * 100).toFixed(1)}%]
-\`\`\``;
-        postableElement.textContent = discordPostable;
-        wikiaElement.textContent = wikiaPostable;
+//         statusElement.innerText = statusString;
+//         discordPostable += `/************************/
+// Comments            ${status.comments}
+// Votes               ${status.validVotes}
+// /************************/
+// Avg Votes Per Char  ${status.validVotes / sortedKeys.length}
+// #1st-#2nd Margin    ${ob.votes[sortedKeys[0]] - ob.votes[sortedKeys[1]]} [${(ob.votes[sortedKeys[1]] / ob.votes[sortedKeys[0]] * 100).toFixed(1)}%]
+// #${ordinal(sortedKeys.length-1)}-#${ordinal(sortedKeys.length)} Margin    ${ob.votes[sortedKeys[sortedKeys.length-2]] - ob.votes[sortedKeys[sortedKeys.length-1]]} [${(ob.votes[sortedKeys[sortedKeys.length-1]] / ob.votes[sortedKeys[sortedKeys.length-2]] * 100).toFixed(1)}%]
+// #1st-#${ordinal(sortedKeys.length)} Margin    ${ob.votes[sortedKeys[0]] - ob.votes[sortedKeys[sortedKeys.length-1]]} [${(ob.votes[sortedKeys[sortedKeys.length-1]] / ob.votes[sortedKeys[0]] * 100).toFixed(1)}%]
+// \`\`\``;
+//         postableElement.textContent = discordPostable;
+//         wikiaElement.textContent = wikiaPostable;
 
+        /*
         chart.draw(data, {
             //height: 400,
             backgroundColor: 'transparent',
@@ -202,5 +203,6 @@ Avg Votes Per Char  ${status.validVotes / sortedKeys.length}
             },
             fontName: 'Roboto'
         });
+         */
     });
 }

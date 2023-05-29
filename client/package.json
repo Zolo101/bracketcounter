@@ -2,7 +2,7 @@
 	"name": "bracketcounter-web",
 	"version": "1.0.0",
 	"private": true,
-    "license": "MIT",
+	"license": "MIT",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
@@ -28,6 +28,7 @@
 	"type": "module",
 	"dependencies": {
 		"json5": "^2.2.3",
+		"pixi.js": "^7.2.4",
 		"ws": "^8.13.0"
 	}
 }

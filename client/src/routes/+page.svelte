@@ -1,17 +1,19 @@
 <script>
     import { onMount } from "svelte";
-    import { fly } from "svelte/transition"
+    import { fly } from "svelte/transition";
+    import {desktop, init, latestMessage} from "../app";
+    import Desktop from "../components/Desktop.svelte";
 
     let acceptedTerms = 1;
     onMount(() => {
-        import("../app.ts")
-
         acceptedTerms = JSON.parse(localStorage.getItem("acceptedTerms"))
+        init()
     })
 
     const acceptTerms = () => {
         localStorage.setItem("acceptedTerms", "1")
         acceptedTerms = 1
+        init()
     }
 </script>
 
@@ -23,21 +25,29 @@
     <meta http-equiv="refresh" content="300">
 </svelte:head>
 
-<div id="thing" class="text-white text-6xl h-20 overflow-hidden">
-    <span>zelo's bracketcounter</span>
-    <span class="text-4xl text-red-600" style="font-family: 'Comic Sans MS', 'Comic Neue', sans-serif;">unofficial unconfirmed!!1!</span>
-</div>
-<div id="status" class="text-white"></div>
-<div id="graph" class="w-full h-3/5 v2s"></div>
-<div id="bars"></div>
-<div id="share" class="text-white">Share on Discord and Wikia</div>
-<textarea id="postable" class="whitespace-pre-wrap w-1/5 h-1/3"></textarea>
-<textarea id="wikiapostable" style="white-space: pre-wrap; width: 48%; height: 30%;"></textarea>
-<div id="legal" class="float-left h-[3%] bg-gray-800 p-1.5">
-    <a on:click={() => acceptedTerms = false}>Legal Notices</a>
-    <a href="https://youtube.com">
-        <img src="./developed-with-youtube.svg" class="h-8" alt="Developed With YouTube"/>
-    </a>
+<div class="flex flex-col h-full">
+    <div id="thing" class="text-white text-6xl h-20 overflow-hidden mx-10 mt-5">
+        <span>zelo's bracketcounter</span>
+        <span class="text-4xl text-red-600" style="font-family: 'Comic Sans MS', 'Comic Neue', sans-serif;">unofficial unconfirmed!!1!</span>
+    </div>
+<!--<div id="status" class="text-white"></div>-->
+<!--<div id="graph" class="w-full h-3/5 v2s"></div>-->
+<!--<div id="bars"></div>-->
+<!--<div id="share" class="text-white">Share on Discord and Wikia</div>-->
+
+<!--<textarea id="postable" class="whitespace-pre-wrap w-1/5 h-1/3"></textarea>-->
+<!--<textarea id="wikiapostable" style="white-space: pre-wrap; width: 48%; height: 30%;"></textarea>-->
+<!--<div id="legal" class="float-left h-[3%] bg-gray-800 p-1.5">-->
+<!--    <a on:click={() => acceptedTerms = false}>Legal Notices</a>-->
+<!--    <a href="https://youtube.com">-->
+<!--        <img src="./developed-with-youtube.svg" class="h-8" alt="Developed With YouTube"/>-->
+<!--    </a>-->
+<!--</div>-->
+    {#if $latestMessage}
+        <div class="bg-neutral-600 grow relative p-5">
+            <Desktop tree={$desktop}/>
+        </div>
+    {/if}
 </div>
 
 {#if !acceptedTerms}
