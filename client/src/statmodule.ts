@@ -1,6 +1,5 @@
 import type { Writable } from "svelte/store";
 import type { Application } from "pixi.js";
-import { Graphics, Text } from "pixi.js";
 import type { SocketMessageData } from "./socket";
 
 export type StatModule = {
@@ -28,16 +27,6 @@ export type DesktopTreeParent = {
 
 export type DesktopTree = Writable<DesktopTreeParent | DesktopTreeChild>
 
-export const barModule: StatModule = {
-    name: "Bar",
-    render(app, stats) {
-        const background = new Graphics();
-        background.beginFill(0x000000)
-        background.drawRect(0, 0, 9999, 9999)
-        background.endFill()
-
-        const text = new Text("Hello, World!")
-        app.stage.addChild(background);
-        app.stage.addChild(text);
-    }
+export function ordinal(d: number): string {
+    return d + (31 == d || 21 == d || 1 == d ? "st" : 22 == d || 2 == d ? "nd" : 23 == d || 3 == d ? "rd" : "th")
 }

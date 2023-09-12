@@ -1,8 +1,9 @@
 <script>
     import { onMount } from "svelte";
     import { fly } from "svelte/transition";
-    import {desktop, init, latestMessage} from "../app";
+    import { desktop, init, latestMessage } from "../app";
     import Desktop from "../components/Desktop.svelte";
+    import Live from "../components/Live.svelte";
 
     let acceptedTerms = 1;
     onMount(() => {
@@ -23,12 +24,85 @@
     <link rel="icon" href="/icon.png" type="image/x-icon"/>
     <title>Bracketcounter</title>
     <meta http-equiv="refresh" content="300">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-9NR4C4M5T0"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-9NR4C4M5T0');
+    </script>
 </svelte:head>
+
+<style>
+    dialog {
+        @apply border-double border-4 border-yellow-300 space-y-2 bg-black bg-opacity-95;
+    }
+
+    dialog a {
+        @apply w-full m-auto bg-indigo-500 bg-opacity-70 text-white text-center p-5 text-3xl rounded;
+    }
+
+    dialog > * {
+        @apply text-neutral-200;
+    }
+
+    .title {
+        font-family: Nabla;
+        font-palette: --myPal;
+        /*animation: rainbow 1s infinite alternate-reverse;*/
+        /*transform: perspective(500px) translateX(150px) rotateX(80deg);*/
+        /*@apply text-7xl -tracking-[0.05em];*/
+    }
+
+    @font-palette-values --myPal {
+        /*animation: rainbow 1s infinite alternate-reverse;*/
+        font-family: Nabla;
+        base-palette: 4;
+        override-colors:
+            8 rgba(0, 0, 0, 0.5),
+            7 rgba(0, 0, 0, 0.5),
+            6 rgba(255, 255, 255, 0.5),
+            5 rgba(255, 255, 255, 0.5);
+    }
+
+    /*@keyframes rainbow {*/
+    /*    0% {*/
+    /*        override-colors: 7 #ff0000;*/
+    /*    }*/
+    /*    16% {*/
+    /*        override-colors: 7 #ff7f00;*/
+    /*    }*/
+    /*    33% {*/
+    /*        override-colors: 7 #ffff00;*/
+    /*    }*/
+    /*    50% {*/
+    /*        override-colors: 7 #00ff00;*/
+    /*    }*/
+    /*    66% {*/
+    /*        override-colors: 7 #0000ff;*/
+    /*    }*/
+    /*    83% {*/
+    /*        override-colors: 7 #4b0082;*/
+    /*    }*/
+    /*    100% {*/
+    /*        override-colors: 7 #8f00ff;*/
+    /*    }*/
+    /*}*/
+</style>
 
 <div class="flex flex-col h-full">
     <div id="thing" class="text-white text-6xl h-20 overflow-hidden mx-10 mt-5">
-        <span>zelo's bracketcounter</span>
-        <span class="text-4xl text-red-600" style="font-family: 'Comic Sans MS', 'Comic Neue', sans-serif;">unofficial unconfirmed!!1!</span>
+        <span class="title">[bc]</span>
+<!--        <span class="text-4xl text-red-600" style="font-family: 'Comic Sans MS', 'Comic Neue', sans-serif;">unofficial unconfirmed!!1!</span>-->
+        <span class="text-xl text-orange-400">work-in-progress fork of figgyc bracketcounter</span>
+        <a href="https://github.com/figgyc/bracketcounter" class="text-xl !text-yellow-400 hover:underline">(Github Repo)</a>
+<!--        <span class="text-xl text-green-400">For now, close contestants are rounded to discourage alt voting</span>-->
+    </div>
+    <div class="absolute top-0 right-0 m-5">
+        <Live/>
     </div>
 <!--<div id="status" class="text-white"></div>-->
 <!--<div id="graph" class="w-full h-3/5 v2s"></div>-->
@@ -78,7 +152,7 @@
                 </ul>
             </li>
             <li>I reserve the right to recollect data temporarily after the vote period finishes for the purpose of providing the service to YouTube for audit purposes.</li>
-            <li>Although the YouTube Terms of Service designate your comment(s) as Content and provide other users with access to them, you may request the website not count comments connected to your YouTube channel by contacting the email at the end of the privacy policy, including a link to your YouTube channel. This request will be respected as soon as possible. Please note that this request does not affect your comments on YouTube and other parties are still able to collect that data. Of course if you wish that nobody can read your comments, then you should use a YouTube Application to delete the comment.</li>
+            <li>Although the YouTube Terms of Service designate your comment(s) as Content and provide other users with access to them, you may request the website not count comments connected to your YouTube channel by messaging me on discord (@zelo101), including a link to your YouTube channel. This request will be respected as soon as possible. Please note that this request does not affect your comments on YouTube and other parties are still able to collect that data. Of course if you wish that nobody can read your comments, then you should use a YouTube Application to delete the comment.</li>
             <li>This website only stores one piece of data on your device using localStorage technology which is used to track whether or not you have accepted this legal notice. This data is not transmitted to my server and is only kept on this device to ensure you have read the notice. If you do not wish for this website to store data on this device then decline the notice.</li>
         </ul>
         <button id="accept" on:click={() => acceptTerms()}>Accept</button>

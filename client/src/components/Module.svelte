@@ -15,24 +15,27 @@
     onMount(async () => {
         // const appDOM = document.querySelector("#app");
         const app = new Application({
-            width: appDOM.clientWidth,
-            height: appDOM.clientHeight,
+            // width: appDOM.clientWidth,
+            // height: appDOM.clientHeight,
             backgroundAlpha: 0,
             antialias: false,
+            resizeTo: appDOM
         })
 
         appDOM.append(app.view);
 
-        statModule.render(app, $latestMessage)
+        latestMessage.subscribe(m => {
+            statModule.render(app, m)
+        })
     })
 </script>
 
 <div class="flex flex-col grow w-full grow border border-lime-500 rounded">
-    <div class="flex justify-between text-xl bg-lime-700 bg-opacity-75 px-5 font-mono">
+    <div class="flex justify-between text-xl bg-lime-700 bg-opacity-75 pl-5 font-mono">
         <p>{statModule.name}</p>
         <div class="flex gap-5">
 <!--            <p>-</p>-->
-            <p on:click={() => remove()} class="px-5 bg-red-500 bg-opacity-25 hover:bg-opacity-100 transition-colors cursor-pointer">✕</p>
+            <p on:click={() => remove()} class="px-8 bg-red-500 bg-opacity-40 hover:bg-opacity-100 transition-colors cursor-pointer">✕</p>
         </div>
     </div>
     <div bind:this={appDOM} id="app" class="w-full grow flex items-center justify-center bg-green-400 bg-opacity-20 hover:bg-opacity-25">

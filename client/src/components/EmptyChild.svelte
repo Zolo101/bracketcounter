@@ -1,9 +1,10 @@
 <script lang="ts">
     import type { DesktopTree } from "../statmodule";
-    import { barModule, DesktopDirection } from "../statmodule";
+    import { DesktopDirection } from "../statmodule";
     import { writable } from "svelte/store";
     import { fly } from "svelte/transition";
     import { statModules } from "../app";
+    import { barModule } from "../modules/bar";
 
     export let child: DesktopTree;
     let dropdown = false;
@@ -43,9 +44,9 @@
 
             {#if $child.depth < 3}
                 <br>
-                <li on:click={() => split(DesktopDirection.Vertical)} class="option">Split Vertically</li>
-                <li on:click={() => split(DesktopDirection.Horizontal)} class="option">Split Horizontally</li>
-                <li on:click={() => remove()} class="option">Delete</li>
+                <li on:click={() => split(DesktopDirection.Vertical)} class="!text-blue-400 option">Split Vertically</li>
+                <li on:click={() => split(DesktopDirection.Horizontal)} class="!text-blue-400 option">Split Horizontally</li>
+                <li on:click={() => remove()} class="!text-red-300 option">Delete</li>
             {/if}
         </div>
     {/if}
@@ -53,7 +54,7 @@
 
 <style>
     .option {
-        @apply p-2 bg-white bg-opacity-0 transition-colors;
+        @apply text-yellow-300 p-2 bg-white bg-opacity-0 transition-colors;
     }
 
     .option:hover {
