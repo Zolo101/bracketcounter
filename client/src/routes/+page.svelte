@@ -94,7 +94,7 @@
 </style>
 
 <div class="flex flex-col h-full">
-    <div id="thing" class="text-white text-6xl h-20 overflow-hidden mx-10 mt-5">
+    <div class="text-white text-6xl min-h-[66px] overflow-hidden mx-10 mt-5 z-10">
         <span class="title">[bc]</span>
 <!--        <span class="text-4xl text-red-600" style="font-family: 'Comic Sans MS', 'Comic Neue', sans-serif;">unofficial unconfirmed!!1!</span>-->
         <span class="text-xl text-orange-400">work-in-progress fork of figgyc bracketcounter</span>
@@ -124,7 +124,8 @@
     {/if}
 </div>
 
-{#if !acceptedTerms}
+<!-- TODO: Make terms and conditions mobile friendly-->
+{#if false}
     <div transition:fly={{x: 200}} id="privacypolicy" class="text-lg z-[9999] fixed top-[0] left-[0] right-[0] bottom-[0] m-auto w-11/12 h-11/12 shadow-2xl bg-gray-900 p-2 text-gray-300 block">
         <p class="text-center">Before you use this website please read and agree to the following:</p>
         <h3>Disclaimer</h3>
