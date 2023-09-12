@@ -98,7 +98,7 @@
         <span class="title">[bc]</span>
 <!--        <span class="text-4xl text-red-600" style="font-family: 'Comic Sans MS', 'Comic Neue', sans-serif;">unofficial unconfirmed!!1!</span>-->
         <span class="text-xl text-orange-400">work-in-progress fork of figgyc bracketcounter</span>
-        <a href="https://github.com/figgyc/bracketcounter" class="text-xl !text-yellow-400 hover:underline">(Github Repo)</a>
+        <a href="https://github.com/zolo101/bracketcounter" class="text-xl !text-yellow-400 hover:underline">(Github Repo)</a>
 <!--        <span class="text-xl text-green-400">For now, close contestants are rounded to discourage alt voting</span>-->
     </div>
     <div class="absolute top-0 right-0 m-5">

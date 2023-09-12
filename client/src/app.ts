@@ -60,9 +60,15 @@ export function init() {
     // TODO: Replace "d9nb0anstyi7nk6" with the current episode recordId via config.toml
 
     status.set(Status.Online)
-    bracketcounter.getOne("d9nb0anstyi7nk6").then(obj => {
-        update(obj.buffer)
-    })
+    bracketcounter.getOne("d9nb0anstyi7nk6")
+        .then(obj => {
+            update(obj.buffer)
+        })
+        .catch(e => {
+            // alert("Please check your internet connection and reload the page!")
+            console.error(e)
+            status.set(Status.ClientOffline)
+        })
     bracketcounter.subscribe("d9nb0anstyi7nk6", (obj) => {
         try {
             update(obj.record.buffer)
