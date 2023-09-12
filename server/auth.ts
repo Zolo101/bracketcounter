@@ -4,12 +4,11 @@ import { config } from "./config"
 // const key = config.key
 import * as http from "http"
 import { YoutubeAPI3 } from "./api"
-import open from "open"
 import * as crypto from "crypto"
 import base64url from "base64url"
 import * as fs from "fs"
 import * as url from "url"
-import querystring from "querystring"
+import { stringify, parse } from "querystring"
 interface AuthCache {
     accessToken: string
     tokenExpiry: number
@@ -57,13 +56,13 @@ export class AuthHelper {
                         scope: "https://www.googleapis.com/auth/youtube.force-ssl",
                         response_type: "code"
                     }
-                    let authRequestUrl = `https://accounts.google.com/o/oauth2/v2/auth?${querystring.stringify(parameters)}`
+                    let authRequestUrl = `https://accounts.google.com/o/oauth2/v2/auth?${stringify(parameters)}`
                     console.log("Open " + authRequestUrl + " in your browser if it has not already.");
-                    await open(authRequestUrl)
+                    // await open(authRequestUrl)
                     let authCode = ""
                     let server = http.createServer(async (req, res) => {
                         let aUrl = new url.URL(req.url!, `http://${req.headers.host}`)
-                        let query = querystring.parse(aUrl.search.substring(1))
+                        let query = parse(aUrl.search.substring(1))
                         if (query !== undefined && query.code !== undefined && typeof query.code == 'string') {
                             authCode = query.code
                         }
@@ -81,7 +80,7 @@ export class AuthHelper {
                                 code: authCode,
                                 grant_type: "authorization_code"
                             }
-                            this.api.getContent("https://oauth2.googleapis.com/token", parameters, true).then(tokenResp => {
+                            this.api.getContent("https://oauth2.googleapis.com/token", parameters, true).then((tokenResp: any) => {
                                 let tokenJson = JSON.parse(tokenResp)
                                 this.authCache.accessToken = tokenJson.access_token
                                 this.authCache.refreshToken = tokenJson.refresh_token

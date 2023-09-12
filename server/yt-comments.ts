@@ -1,49 +1,24 @@
 #!/usr/bin/env node
 import { YoutubeAPI3 } from "./api"
 import {config} from "./config"
-import WebSocket from "ws";
 import * as fs from "fs";
+// import { bracketcounter } from "./pocketbase";
 const api = new YoutubeAPI3(checkFinished, processEntry, setDone, setTotalComments)
 
-let wss: WebSocket.Server | undefined = undefined
-
-function heartbeat(this: any) {
-  this.isAlive = true;
-}
-
-if (config.liveMode) {
-    wss = new WebSocket.Server({ port: config.port });
-
-    wss.on('connection', (ws) => {
-        (ws as any).isAlive = true;
-        ws.on('pong', heartbeat);
-        ws.on('error', () => console.log('websocket error'));
-        ws.on('message', data => {
-            try {
-                if (data.toString() == config.accessCode) {
-                    ws.send(JSON.stringify(currentMessage));
-                    (ws as any).authed = true;
-                }
-            } catch {}
-        })
-    });
-
-}
 // Broadcast to all.
-function broadcast(data: string) {
+async function broadcast(data: string) {
     if (data == "{}") return // don't send empty data
-    console.log(data)
-    if (wss != undefined) {
-        wss.clients.forEach(ws => {
-            if ((ws as any).isAlive === false) return ws.terminate();
-            (ws as any).isAlive = false;
-            ws.ping(() => {});
 
-            if (ws.readyState === WebSocket.OPEN && (ws as any).authed) {
-                ws.send(data);
-            }
-        })
-    }
+    await fetch(`https://cdn.zelo.dev/api/collections/idegyqwnwoim3ra/records/d9nb0anstyi7nk6`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            "secret": config.secret
+        },
+        body: JSON.stringify(data)
+    })
+
+    // await bracketcounter.update("d9nb0anstyi7nk6", data)
 };
 
 
@@ -74,10 +49,10 @@ let validVotes: number = 0; // votes for a-h and not random stuff.
 let votingUsers: { [userid: string]: number} = {}; // array of channel ids who have already voted, prevent dupes
 let comments: number = 0; // number of comments processed for progress tracking
 let commentIds: { [commentId: string]: Date } = {}; // comment ids to prevent duplicate counting on the live update
-let totalComments: number = 0; // total number of comments that should be counted according to yt api
-let multiVoters: number = 0; // people who commented more than once
-let probablyDone: boolean = false; // rough estimate if we are done or not. based on if there is a next page
-let runningPostTask: boolean = false;
+let totalComments = 0; // total number of comments that should be counted according to yt api
+let multiVoters = 0; // people who commented more than once
+let probablyDone = false; // rough estimate if we are done or not. based on if there is a next page
+let runningPostTask = false;
 let finalVotes: { [contestant: string]: number } = {}; // for fancy display of votes at the end. only used for filtering atm
 let currentMessage: any = {};
 // static things
@@ -162,7 +137,7 @@ async function checkFinished() {
                 validVotes: validVotes,
                 multiVoters: multiVoters,
                 updateDate: updateDate,
-                clients: (wss != undefined) ? wss.clients.size: 0,
+                // clients: (wss != undefined) ? wss.clients.size: 0,
                 done: probablyDone,
             },
             config: scrubKey(config),
@@ -171,7 +146,7 @@ async function checkFinished() {
         }
     }
     //if (totalComments * 0.9 <= comments) probablyDone = true
-    broadcast(JSON.stringify(currentMessage));
+    await broadcast(JSON.stringify(currentMessage));
 }
 
 // process entries and totals up vote count and other stuff
@@ -237,6 +212,7 @@ function save() {
         finalVotes: finalVotes,
         entries: entries
     }
+    console.log("saving")
     fs.writeFileSync(config.savestateFile, JSON.stringify(savestate));
 }
 
@@ -318,3 +294,5 @@ if (fs.existsSync(config.savestateFile)) {
 } else {
     go()
 }
+
+setInterval(save, 1000 * 60 * 30) // save every 30 minutes

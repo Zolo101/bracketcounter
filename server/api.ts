@@ -1,8 +1,8 @@
 // google api stuff
 
-import async from "async";
-import https from "https";
-import querystring from "querystring";
+import { each } from "async";
+import { request } from "https";
+import { stringify } from "querystring";
 import { IncomingMessage } from "http";
 import { AuthHelper } from "./auth";
 import * as urlLib from "url";
@@ -33,8 +33,8 @@ export class YoutubeAPI3 {
         // return new pending promise
         return new Promise<string>((resolve, reject) => {
             // select http or https module, depending on reqested url
-            let parsedUrl = new urlLib.URL((url + (post ? "" : "?" + querystring.stringify(params))))
-            const request = https.request({
+            let parsedUrl = new urlLib.URL((url + (post ? "" : "?" + stringify(params))))
+            const requestResult = request({
                 path: parsedUrl.pathname + parsedUrl.search,
                 host: parsedUrl.hostname,
                 port: parsedUrl.port,
@@ -67,10 +67,10 @@ export class YoutubeAPI3 {
                     }
                 });
             });
-            if (post) request.write(querystring.stringify(params))
-            // handle connection errors of the request
-            request.on("error", err => reject(err));
-            request.end();
+            if (post) requestResult.write(stringify(params))
+            // handle connection errors of the requestResult
+            requestResult.on("error", err => reject(err));
+            requestResult.end();
         });
     }
 
@@ -116,7 +116,7 @@ export class YoutubeAPI3 {
                 this.getReplies(id, obj.nextPageToken);
             }
             if (obj.items) {
-                async.each(obj.items, (item: any) => {
+                each(obj.items, (item: any) => {
                     item.isReply = true
                     this.noteItem(item);
                 });
@@ -184,7 +184,7 @@ export class YoutubeAPI3 {
             if (obj.error) {
                 throw "Error requesting";
             } else {
-                async.each(obj.items, (item: object, callback: Function) => {
+                each(obj.items, (item: object, callback: Function) => {
                     this.noteItem(item);
                     callback()
                 }, () => {

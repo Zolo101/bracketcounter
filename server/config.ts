@@ -14,6 +14,7 @@ export namespace config {
     export const accessCode: string = confObj.accessCode;
     export const suspended: boolean = confObj.suspended;
     export const isAuthenticated: boolean = confObj.isAuthenticated;
+    export const secret: string = confObj.secret;
     export const clientId: string = confObj.clientId;
     export const clientSecret: string = confObj.clientSecret;
     export const authCache: string = confObj.authCache;
