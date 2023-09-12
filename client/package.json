@@ -25,6 +25,7 @@
 	"type": "module",
 	"dependencies": {
 		"json5": "^2.2.3",
-		"pixi.js": "^7.2.4"
+		"pixi.js": "^7.2.4",
+		"pocketbase": "^0.18.0"
 	}
 }

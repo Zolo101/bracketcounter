@@ -11,6 +11,9 @@ dependencies:
   pixi.js:
     specifier: ^7.2.4
     version: 7.2.4(@pixi/utils@7.2.4)
+  pocketbase:
+    specifier: ^0.18.0
+    version: 0.18.0
 
 devDependencies:
   '@sveltejs/adapter-static':
@@ -1435,6 +1438,10 @@ packages:
       '@pixi/text-html': 7.2.4(@pixi/core@7.2.4)(@pixi/display@7.2.4)(@pixi/sprite@7.2.4)(@pixi/text@7.2.4)
     transitivePeerDependencies:
       - '@pixi/utils'
+    dev: false
+
+  /pocketbase@0.18.0:
+    resolution: {integrity: sha512-09ri0Rnm4JjboU4OJeibd6pgvKi4DPg/r/Uu/QI3mKSZsrROoMT75zyiOldbBBMWZUDG1TRlv6BjQj30SFsrVw==}
     dev: false
 
   /postcss-import@15.1.0(postcss@8.4.29):
