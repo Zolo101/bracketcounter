@@ -83,8 +83,8 @@ export const barModule: StatModule = {
 
         let counter = 0;
         app.ticker.add(() => {
-            const width = app.view.width;
-            const height = app.view.height;
+            const appWidth = app.view.width;
+            const appHeight = app.view.height;
             counter++;
             app.resize()
 
@@ -109,18 +109,18 @@ export const barModule: StatModule = {
                 const closeCall = false
                 const displayVotes = closeCall ? Math.round(votes / 100) * 100 : votes
                 // const colour = contestants[key][1]
-                const width = displayVotes / 10
+                const width = (displayVotes / 20000) * appWidth
                 // const width = votes / 10
                 const x = 100
-                const y = 20 + (i * (height / len + 20))
+                const y = 20 + (i * (appHeight / len + 20))
 
                 const backgroundColour = whatTeam(key) ? "#fdca00" : "#dee0fd"
 
                 bar.beginFill(backgroundColour)
-                bar.drawRect(x - 10, y, 100, height / len)
+                bar.drawRect(x - 10, y, 100, appHeight / len)
 
                 bar.beginFill(colour)
-                bar.drawRect(x, y, width, height / len)
+                bar.drawRect(x, y, width, appHeight / len)
                 bar.beginTextureFill({
                     color: colour,
                     texture
@@ -128,11 +128,11 @@ export const barModule: StatModule = {
 
                 if (closeCall) {
                     bar.beginFill(colour, 0.2)
-                    bar.drawRect(x, y, width + 10, height / len)
+                    bar.drawRect(x, y, width + 10, appHeight / len)
                 }
 
                 // TODO: Changes "votes" so that it doesnt eventually clip out of the window
-                bar.drawRect(x, y, width, height / len)
+                bar.drawRect(x, y, width, appHeight / len)
                 bar.endFill()
 
                 voteLineNumberText[i].text = `${name} (${key.toUpperCase()})`
@@ -148,6 +148,13 @@ export const barModule: StatModule = {
                     voteLineBarVoteCountText[i].text = displayVotes
                 }
                 voteLineLeaderboardIndexText[i].setTransform(x - 80, y + 8)
+
+                // const textScale = Math.max(900, appWidth) / 900
+                //
+                //
+                // voteLineNumberText[i].scale.set(1, textScale)
+                // voteLineBarVoteCountText[i].scale.set(1, textScale)
+                // voteLineLeaderboardIndexText[i].scale.set(1, textScale)
                 i++;
             }
             // bar.lineStyle()

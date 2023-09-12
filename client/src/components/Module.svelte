@@ -13,16 +13,17 @@
     }
 
     onMount(async () => {
-        // const appDOM = document.querySelector("#app");
+        const appDOM = document.querySelector("#app")! as HTMLDivElement
         const app = new Application({
             // width: appDOM.clientWidth,
             // height: appDOM.clientHeight,
             backgroundAlpha: 0,
             antialias: false,
+            autoDensity: true,
             resizeTo: appDOM
         })
 
-        appDOM.append(app.view);
+        appDOM.append(app.view)
 
         latestMessage.subscribe(m => {
             statModule.render(app, m)
@@ -38,7 +39,9 @@
             <p on:click={() => remove()} class="px-8 bg-red-500 bg-opacity-40 hover:bg-opacity-100 transition-colors cursor-pointer">✕</p>
         </div>
     </div>
-    <div bind:this={appDOM} id="app" class="w-full grow flex items-center justify-center bg-green-400 bg-opacity-20 hover:bg-opacity-25">
+<!--    <div class="absolute w-[100vw] -h-[50vh] bg-transparent"></div>-->
+    <div bind:this={appDOM} id="app" class="w-full min-w-[600px] min-h-[800px] grow flex items-center justify-center bg-green-400 bg-opacity-20 hover:bg-opacity-25">
+        <div class="fixed left-5 top-36 w-full h-full"></div>
         <!--{statModule.render()}-->
 <!--        <p class="text-2xl text-green-400">{statModule.name}</p>-->
 <!--        <div>-->
