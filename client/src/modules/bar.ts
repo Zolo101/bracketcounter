@@ -17,6 +17,8 @@ const whatTeam = (key: string) => {
         case "i":
         case "j":
         case "k":
+        case "l":
+        default:
             return true;
     }
 }
@@ -114,7 +116,7 @@ export const barModule: StatModule = {
                 const x = 100
                 const y = 20 + (i * (appHeight / len + 20))
 
-                const backgroundColour = whatTeam(key) ? "#fdca00" : "#dee0fd"
+                const backgroundColour = whatTeam(key) ? "#9dcf4b" : "#fd8fbe"
 
                 bar.beginFill(backgroundColour)
                 bar.drawRect(x - 10, y, 100, appHeight / len)
