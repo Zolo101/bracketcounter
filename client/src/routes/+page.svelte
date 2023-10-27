@@ -1,21 +1,41 @@
-<script>
+<script lang="ts">
     import { onMount } from "svelte";
     import { fly } from "svelte/transition";
     import { desktop, init, latestMessage } from "../app";
     import Desktop from "../components/Desktop.svelte";
     import Live from "../components/Live.svelte";
+    let countdownText = "";
+    let countdown: number;
+    let deadline = 99999999999
 
     let acceptedTerms = 1;
     onMount(() => {
         acceptedTerms = JSON.parse(localStorage.getItem("acceptedTerms"))
         init()
+
+        latestMessage.subscribe(v => deadline = v.status.deadline)
     })
+
 
     const acceptTerms = () => {
         localStorage.setItem("acceptedTerms", "1")
         acceptedTerms = 1
         init()
     }
+
+    const formatSeconds = (secs: number) => {
+        const pad = (n: number) => n < 10 ? `0${n}` : n;
+
+        const h = Math.floor(secs / 3600);
+        const m = Math.floor(secs / 60) - (h * 60);
+        const s = Math.floor(secs - h * 3600 - m * 60);
+
+        return `${pad(h)}:${pad(m)}:${pad(s)}`;
+    }
+
+    setInterval(() => {
+        countdownText = formatSeconds((deadline - Date.now()) / 1000)
+    }, 1000)
 </script>
 
 <svelte:head>
@@ -36,72 +56,14 @@
     </script>
 </svelte:head>
 
-<style>
-    dialog {
-        @apply border-double border-4 border-yellow-300 space-y-2 bg-black bg-opacity-95;
-    }
-
-    dialog a {
-        @apply w-full m-auto bg-indigo-500 bg-opacity-70 text-white text-center p-5 text-3xl rounded;
-    }
-
-    dialog > * {
-        @apply text-neutral-200;
-    }
-
-    .title {
-        font-family: Nabla;
-        font-palette: --myPal;
-        /*animation: rainbow 1s infinite alternate-reverse;*/
-        /*transform: perspective(500px) translateX(150px) rotateX(80deg);*/
-        /*@apply text-7xl -tracking-[0.05em];*/
-    }
-
-    @font-palette-values --myPal {
-        /*animation: rainbow 1s infinite alternate-reverse;*/
-        font-family: Nabla;
-        base-palette: 4;
-        override-colors:
-            8 rgba(0, 0, 0, 0.5),
-            7 rgba(0, 0, 0, 0.5),
-            6 rgba(255, 255, 255, 0.5),
-            5 rgba(255, 255, 255, 0.5);
-    }
-
-    /*@keyframes rainbow {*/
-    /*    0% {*/
-    /*        override-colors: 7 #ff0000;*/
-    /*    }*/
-    /*    16% {*/
-    /*        override-colors: 7 #ff7f00;*/
-    /*    }*/
-    /*    33% {*/
-    /*        override-colors: 7 #ffff00;*/
-    /*    }*/
-    /*    50% {*/
-    /*        override-colors: 7 #00ff00;*/
-    /*    }*/
-    /*    66% {*/
-    /*        override-colors: 7 #0000ff;*/
-    /*    }*/
-    /*    83% {*/
-    /*        override-colors: 7 #4b0082;*/
-    /*    }*/
-    /*    100% {*/
-    /*        override-colors: 7 #8f00ff;*/
-    /*    }*/
-    /*}*/
-</style>
-
 <div class="flex flex-col h-full">
-    <div class="text-white text-6xl min-h-[66px] overflow-hidden mx-10 mt-5 z-10">
-        <span class="title">[bc]</span>
+    <div class="flex items-center justify-around text-white text-5xl min-h-[66px] grow px-5 z-10">
+        <span class="title p-2">[bc]</span>
 <!--        <span class="text-4xl text-red-600" style="font-family: 'Comic Sans MS', 'Comic Neue', sans-serif;">unofficial unconfirmed!!1!</span>-->
-        <span class="text-xl text-orange-400">work-in-progress fork of figgyc bracketcounter</span>
-        <a href="https://github.com/zolo101/bracketcounter" class="text-xl !text-yellow-400 hover:underline">(Github Repo)</a>
+<!--        <span class="text-xl text-orange-400">WIP mod of figgyc bracketcounter</span>-->
+<!--        <a href="https://github.com/zolo101/bracketcounter" class="text-xl !text-yellow-400 hover:underline">(Github Repo)</a>-->
+        <span class="bg-white/10 p-2 rounded-xl">{countdownText}</span>
 <!--        <span class="text-xl text-green-400">For now, close contestants are rounded to discourage alt voting</span>-->
-    </div>
-    <div class="absolute top-0 right-0 m-5">
         <Live/>
     </div>
 <!--<div id="status" class="text-white"></div>-->
@@ -160,3 +122,25 @@
         <a href="https://google.com" on:click={() => localStorage.clear()} id="decline">Decline</a> You may change your preference at any time by clicking the Legal Notices button at the bottom right of the page.
     </div>
 {/if}
+
+
+<style>
+    .title {
+        font-family: Nabla, sans-serif;
+        font-palette: --myPal;
+        /*animation: rainbow 1s infinite alternate-reverse;*/
+        /*transform: perspective(500px) translateX(150px) rotateX(80deg);*/
+        /*@apply text-7xl -tracking-[0.05em];*/
+    }
+
+    @font-palette-values --myPal {
+        /*animation: rainbow 1s infinite alternate-reverse;*/
+        font-family: Nabla;
+        base-palette: 4;
+        override-colors:
+            8 rgba(0, 0, 0, 0.5),
+            7 rgba(0, 0, 0, 0.5),
+            6 rgba(255, 255, 255, 0.5),
+            5 rgba(255, 255, 255, 0.5);
+    }
+</style>
