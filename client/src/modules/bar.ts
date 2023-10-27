@@ -1,7 +1,7 @@
 import { Graphics, Text, Texture } from "pixi.js";
 import type { StatModule } from "../statmodule";
 import { ordinal } from "../statmodule";
-import { latestMessage } from "../app";
+import { history, latestMessage } from "../app";
 
 const whatTeam = (key: string) => {
     switch (key) {
@@ -28,15 +28,36 @@ const whatTeam = (key: string) => {
 export const barModule: StatModule = {
     name: "Bar",
     render(app, stats) {
-        latestMessage.subscribe(m => stats = m)
+        const lastTimesVotes: Record<string, number[]> = {} // 10 tick history of last vote count rise amounts
+        lastTimesVotes["a"] = [] // :(
+        lastTimesVotes["b"] = []
+        lastTimesVotes["c"] = []
+        lastTimesVotes["d"] = []
+        lastTimesVotes["e"] = []
+        lastTimesVotes["f"] = []
+        lastTimesVotes["g"] = []
+        lastTimesVotes["h"] = []
+        lastTimesVotes["i"] = []
+        lastTimesVotes["j"] = []
+        lastTimesVotes["k"] = []
+        lastTimesVotes["l"] = []
 
-        const contestants = stats.config.contestants
+        latestMessage.subscribe(m => {
+            stats = m
+            for (const [key, votes] of Object.entries(m.votes)) {
+                lastTimesVotes[key].push(votes)
+                if (lastTimesVotes[key].length > 10) lastTimesVotes[key].shift()
+            }
+        })
+
         const votes = Object.entries(stats.votes)
+        const contestants = stats.config.contestants
         const background = new Graphics()
         const bar = new Graphics()
         background.beginFill(0x000000)
         background.drawRect(0, 0, 9999, 9999)
         background.endFill()
+
 
         const voteLineNumberText = new Array(votes.length)
             .fill(0)
@@ -79,8 +100,22 @@ export const barModule: StatModule = {
                 // dropShadowDistance: 6
             }))
 
+        const voteLineBarVoteCountTextInfo = new Array(votes.length)
+            .fill(0)
+            .map((_, i) => new Text("", {
+                fill: 0xffffff,
+                // fill: contestants[votes[i][0]][1],
+                // fontFamily: "monospace",
+                fontSize: 16,
+                fontWeight: "bold",
+                // dropShadow: true,
+                // dropShadowAlpha: 0.2,
+                // dropShadowDistance: 6
+            }))
+        voteLineBarVoteCountTextInfo.forEach(t => t.alpha = 0.5)
+
         // const text = new Text("Hello, World!")
-        app.stage.addChild(background, bar, ...voteLineNumberText, ...voteLineLeaderboardIndexText, ...voteLineBarVoteCountText);
+        app.stage.addChild(background, bar, ...voteLineNumberText, ...voteLineLeaderboardIndexText, ...voteLineBarVoteCountText, ...voteLineBarVoteCountTextInfo);
         // app.stage.addChild(text);
 
         const texture = Texture.from("dots_alpha.png")
@@ -108,6 +143,8 @@ export const barModule: StatModule = {
             }
             background.endFill()
 
+            // console.log(lastTimesVotes)
+            // console.log(lastTimesVotes["a"])
 
             bar.clear()
             let i = 0;
@@ -115,6 +152,7 @@ export const barModule: StatModule = {
             for (const [key, votes] of sorted) {
                 const name = contestants[key][0]
                 const colour = contestants[key][1]
+
                 const previousContestant = sorted[i - 1]
                 const previousContestantVotes = previousContestant ? previousContestant[1] : 0
                 const nextContestant = sorted[i + 1]
@@ -158,8 +196,11 @@ export const barModule: StatModule = {
                     voteLineBarVoteCountText[i].setTransform(x + 10 + width + 10, y + 2)
                 } else {
                     voteLineLeaderboardIndexText[i].text = ordinal(i + 1)
-                    voteLineBarVoteCountText[i].setTransform(x + 10 + width, y + 2)
+                    voteLineBarVoteCountText[i].setTransform(x + 10 + width, y - 4)
                     voteLineBarVoteCountText[i].text = displayVotes
+                    // voteLineBarVoteCountTextInfo[i].text = `Avg gain: + ${getAverageGainPerMinute(lastTimesVotes[key])}, Since Last Refresh: + ${lastTimesVotes[key].at(-1)}`
+                    voteLineBarVoteCountTextInfo[i].text = `+${getLatestGain(lastTimesVotes[key])}, ~${getAverageGainPerMinute(lastTimesVotes[key]).toPrecision(2)} per minute`
+                    voteLineBarVoteCountTextInfo[i].setTransform(x + 10 + width, y + 32)
                 }
                 voteLineLeaderboardIndexText[i].setTransform(x - 80, y + 8)
 
@@ -178,3 +219,18 @@ export const barModule: StatModule = {
 
 const anyClose = (a: number, b: number, threshold= 50) => Math.abs(a - b) < threshold
 const getRange = (obj: Record<string, number>) => Math.max(...Object.values(obj)) - Math.min(...Object.values(obj))
+const getAverageGainPerMinute = (history: number[]) => {
+    const gain = history.map((v, i) => history[i] - (history[i - 1] ?? 0))
+    gain.shift()
+    if (gain.length === 0) return 0
+
+    const gainSum = gain.reduce((a, b) => a + b)
+    return (gainSum / gain.length) * 2 // 2 ticks = 1 minute
+}
+const getLatestGain = (history: number[]) => {
+    if (history.length >= 2) {
+        return history.at(-1)! - history.at(-2)!
+    } else {
+        return 0
+    }
+}
