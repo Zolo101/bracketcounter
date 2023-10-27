@@ -46,7 +46,7 @@
                 <br>
                 <li on:click={() => split(DesktopDirection.Vertical)} class="!text-blue-400 option">Split Vertically</li>
                 <li on:click={() => split(DesktopDirection.Horizontal)} class="!text-blue-400 option">Split Horizontally</li>
-                <li on:click={() => remove()} class="!text-red-300 option">Delete</li>
+                <li on:click={remove} class="!text-red-300 option">Delete</li>
             {/if}
         </div>
     {/if}

@@ -1,6 +1,7 @@
 import { Graphics, Text, Texture } from "pixi.js";
 import type { StatModule } from "../statmodule";
 import { ordinal } from "../statmodule";
+import { latestMessage } from "../app";
 
 const whatTeam = (key: string) => {
     switch (key) {
@@ -27,6 +28,8 @@ const whatTeam = (key: string) => {
 export const barModule: StatModule = {
     name: "Bar",
     render(app, stats) {
+        latestMessage.subscribe(m => stats = m)
+
         const contestants = stats.config.contestants
         const votes = Object.entries(stats.votes)
         const background = new Graphics()
@@ -90,15 +93,24 @@ export const barModule: StatModule = {
             counter++;
             app.resize()
 
+            let len = Object.entries(stats.votes).length + 5
+            let range = getRange(stats.votes)
+            let widthOf1000 = (appWidth / 5) * (1000 / range)
+
             background.clear()
             background.beginFill({h: counter, s: 100, v: 10})
             background.drawRect(0, 0, 9999, 9999)
+            background.beginFill(0xffffff, 0.1)
+            let j = 0;
+            while (j < appWidth) {
+                background.drawRect(j, 0, 4, 9999)
+                j += widthOf1000;
+            }
             background.endFill()
 
 
             bar.clear()
             let i = 0;
-            let len = Object.entries(stats.votes).length + 5
             const sorted = Object.entries(stats.votes).sort((a, b) => b[1] - a[1])
             for (const [key, votes] of sorted) {
                 const name = contestants[key][0]
@@ -111,7 +123,7 @@ export const barModule: StatModule = {
                 const closeCall = false
                 const displayVotes = closeCall ? Math.round(votes / 100) * 100 : votes
                 // const colour = contestants[key][1]
-                const width = (displayVotes / 10000) * appWidth
+                const width = (appWidth / 5) * (displayVotes / range)
                 // const width = votes / 10
                 const x = 100
                 const y = 20 + (i * (appHeight / len + 20))
@@ -137,7 +149,7 @@ export const barModule: StatModule = {
                 bar.drawRect(x, y, width, appHeight / len)
                 bar.endFill()
 
-                voteLineNumberText[i].text = `${name} (${key.toUpperCase()})`
+                voteLineNumberText[i].text = `${name} [${key.toUpperCase()}]`
                 voteLineNumberText[i].setTransform(x + 5, y)
 
                 if (closeCall) {
@@ -165,3 +177,4 @@ export const barModule: StatModule = {
 }
 
 const anyClose = (a: number, b: number, threshold= 50) => Math.abs(a - b) < threshold
+const getRange = (obj: Record<string, number>) => Math.max(...Object.values(obj)) - Math.min(...Object.values(obj))

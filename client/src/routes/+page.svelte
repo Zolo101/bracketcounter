@@ -118,7 +118,7 @@
 <!--    </a>-->
 <!--</div>-->
     {#if $latestMessage}
-        <div class="bg-neutral-600 grow relative p-5">
+        <div class="bg-neutral-600 grow relative">
             <Desktop tree={$desktop}/>
         </div>
     {/if}

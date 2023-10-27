@@ -9,6 +9,8 @@ export const latestMessage = writable<SocketMessageData>();
 export const desktop = writable<DesktopTree>(writable({parent: false, depth: 1, module: barModule}));
 // export const desktop = writable<DesktopTree>(writable({parent: false, depth: 0}));
 export const history = new Map<number, DesktopTree>()
+export let discordPostable: string;
+export let wikiaPostable: string;
 desktop.subscribe(dt => history.set(Date.now(), dt))
 
 // TODO: Control from server side
@@ -22,9 +24,9 @@ export enum Status {
 export const status = writable<Status>(Status.ServerOffline)
 
 export const statModules = [
-    "Graph",
+    "Graph (WIP)",
     "Bar",
-    "Pie Chart",
+    "Pie Chart (WIP)",
     // "Boredom Repellant",
     // "BFDI Quiz",
     // "BFDIA 5b"
@@ -257,8 +259,8 @@ function update(obj: any) {
         colors[contestant] = config.contestants[contestant][1]
     }
     // document.body.style.background = `linear-gradient(rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.8) 100%), url(https://i.ytimg.com/vi/${status.id}/maxresdefault.jpg)`;
-    let discordPostable = '```css\n';
-    let wikiaPostable = `{| class="article-table mw-collapsible mw-collapsed" data-expandtext="Show votes" data-collapsetext="Hide votes"
+    discordPostable = '```css\n';
+    wikiaPostable = `{| class="article-table mw-collapsible mw-collapsed" data-expandtext="Show votes" data-collapsetext="Hide votes"
 !Icon
 !Contestant
 !Votes
