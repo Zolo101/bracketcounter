@@ -60,12 +60,13 @@
 <div class="flex flex-col h-full">
     <div class="flex items-center justify-around text-white text-5xl min-h-[66px] grow px-5 z-10">
         <span class="title p-2">[bc]</span>
+        <span class="text-orange-500 text-lg">These results are UNCONFIRMED and will differ from the official count!</span>
 <!--        <span class="text-4xl text-red-600" style="font-family: 'Comic Sans MS', 'Comic Neue', sans-serif;">unofficial unconfirmed!!1!</span>-->
 <!--        <span class="text-xl text-orange-400">WIP mod of figgyc bracketcounter</span>-->
 <!--        <a href="https://github.com/zolo101/bracketcounter" class="text-xl !text-yellow-400 hover:underline">(Github Repo)</a>-->
-        <span class="bg-white/10 p-2 rounded-xl" class:end={!countdown}>{countdownText}</span>
+<!--        <span class="bg-white/10 p-2 rounded-xl" class:end={!countdown}>{countdownText}</span>-->
 <!--        <span class="text-xl text-green-400">For now, close contestants are rounded to discourage alt voting</span>-->
-        <Live/>
+<!--        <Live/>-->
     </div>
 <!--<div id="status" class="text-white"></div>-->
 <!--<div id="graph" class="w-full h-3/5 v2s"></div>-->
@@ -139,10 +140,14 @@
         font-family: Nabla;
         base-palette: 4;
         override-colors:
-            8 rgba(0, 0, 0, 0.5),
-            7 rgba(0, 0, 0, 0.5),
-            6 rgba(255, 255, 255, 0.5),
-            5 rgba(255, 255, 255, 0.5);
+            8 rgb(249, 141, 187),
+            7 rgb(155, 205, 83),
+            6 rgb(155, 205, 83),
+            5 rgb(155, 205, 83),
+            4 rgb(249, 141, 187),
+            3 rgb(249, 141, 187),
+            2 rgb(249, 141, 187),
+            1 rgb(249, 141, 187);
     }
 
     .end {
