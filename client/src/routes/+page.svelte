@@ -34,7 +34,8 @@
     }
 
     setInterval(() => {
-        countdownText = formatSeconds((deadline - Date.now()) / 1000)
+        countdown = Math.max(0, (deadline - Date.now()) / 1000)
+        countdownText = formatSeconds(countdown)
     }, 1000)
 </script>
 
@@ -62,7 +63,7 @@
 <!--        <span class="text-4xl text-red-600" style="font-family: 'Comic Sans MS', 'Comic Neue', sans-serif;">unofficial unconfirmed!!1!</span>-->
 <!--        <span class="text-xl text-orange-400">WIP mod of figgyc bracketcounter</span>-->
 <!--        <a href="https://github.com/zolo101/bracketcounter" class="text-xl !text-yellow-400 hover:underline">(Github Repo)</a>-->
-        <span class="bg-white/10 p-2 rounded-xl">{countdownText}</span>
+        <span class="bg-white/10 p-2 rounded-xl" class:end={!countdown}>{countdownText}</span>
 <!--        <span class="text-xl text-green-400">For now, close contestants are rounded to discourage alt voting</span>-->
         <Live/>
     </div>
@@ -142,5 +143,9 @@
             7 rgba(0, 0, 0, 0.5),
             6 rgba(255, 255, 255, 0.5),
             5 rgba(255, 255, 255, 0.5);
+    }
+
+    .end {
+        @apply bg-black text-red-500 animate-pulse;
     }
 </style>
