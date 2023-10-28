@@ -130,7 +130,7 @@ export const barModule: StatModule = {
 
             let len = Object.entries(stats.votes).length + 5
             let range = getRange(stats.votes)
-            let widthOf1000 = (appWidth / 5) * (1000 / range)
+            let widthOf1000 = (appWidth / 10) * (1000 / range)
 
             background.clear()
             background.beginFill({h: counter, s: 100, v: 10})
@@ -161,7 +161,7 @@ export const barModule: StatModule = {
                 const closeCall = false
                 const displayVotes = closeCall ? Math.round(votes / 100) * 100 : votes
                 // const colour = contestants[key][1]
-                const width = (appWidth / 5) * (displayVotes / range)
+                const width = (appWidth / 10) * (displayVotes / range)
                 // const width = votes / 10
                 const x = 100
                 const y = 20 + (i * (appHeight / len + 20))
