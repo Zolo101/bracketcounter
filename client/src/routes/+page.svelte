@@ -44,7 +44,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="/icon.png" type="image/x-icon"/>
     <title>Bracketcounter</title>
-    <meta http-equiv="refresh" content="300">
 
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-9NR4C4M5T0"></script>

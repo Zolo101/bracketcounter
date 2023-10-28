@@ -36,11 +36,6 @@ function numberWithCommas(x: number) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-let customTicks: number[] = []
-for (let i = 0; i < 60; i++) {
-    customTicks.push(921*i);
-}
-
 // const statusElement: HTMLDivElement = <HTMLDivElement> document.querySelector("#status")!;
 // const postableElement: HTMLTextAreaElement = <HTMLTextAreaElement> document.querySelector("#postable")!;
 // const wikiaElement: HTMLDivElement = <HTMLDivElement> document.querySelector("#wikiapostable")!;
