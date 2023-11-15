@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap');
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap");
 @import url('https://fonts.googleapis.com/css2?family=Nabla&display=swap');
@@ -12,6 +13,7 @@ html {
 
 body {
     @apply h-full w-full overflow-x-hidden text-white m-0 p-0 bg-gray-800;
+    font-family: Inter, sans-serif;
 }
 
 @layer base {
@@ -41,12 +43,12 @@ textarea {
 
 
 a {
-    @apply text-gray-400 no-underline;
+    @apply text-gray-100;
 }
 
-a:visited {
-    @apply text-gray-600;
-}
+/*a:visited {*/
+/*    @apply text-gray-400;*/
+/*}*/
 
 button {
     /*@apply bg-gray-600 p-5 shadow;*/
