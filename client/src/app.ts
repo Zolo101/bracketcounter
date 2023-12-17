@@ -22,7 +22,7 @@ export enum Status {
     ServerOffline
 }
 export const status = writable<Status>(Status.ServerOffline)
-
+const ID = "ve8tha1rbkqhjyk"
 export const statModules = [
     "Graph (WIP)",
     "Bar",
@@ -57,7 +57,7 @@ export function init() {
     // TODO: Replace "d9nb0anstyi7nk6" with the current episode recordId via config.toml
 
     status.set(Status.Online)
-    bracketcounter.getOne("d9nb0anstyi7nk6")
+    bracketcounter.getOne(ID)
         .then(obj => {
             update(obj.buffer)
         })
@@ -66,7 +66,7 @@ export function init() {
             console.error(e)
             status.set(Status.ClientOffline)
         })
-    bracketcounter.subscribe("d9nb0anstyi7nk6", (obj) => {
+    bracketcounter.subscribe(ID, (obj) => {
         try {
             update(obj.record.buffer)
             status.set(Status.Online)
