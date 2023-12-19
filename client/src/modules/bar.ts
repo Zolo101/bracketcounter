@@ -37,6 +37,8 @@ const clamp = (num: number, min: number, max: number) => Math.min(Math.max(num, 
 export const barModule: StatModule = {
     name: "Bar",
     render(app, stats) {
+        Text.defaultResolution = 2;
+        Text.defaultAutoResolution = false;
         // const t = Texture.from("Pie.webp")
         // i want 1000 sprites
         // const snowSprites = new Array(100)
@@ -103,10 +105,7 @@ export const barModule: StatModule = {
                 // fill: contestants[votes[i][0]][1],
             }))
 
-        voteLineNumberText.forEach(nt => {
-            nt.alpha = 0.5
-            nt.resolution = 2
-        })
+        voteLineNumberText.forEach(nt => nt.alpha = 0.5)
 
         const voteLineLeaderboardIndexText = new Array(votes.length)
             .fill(0)
