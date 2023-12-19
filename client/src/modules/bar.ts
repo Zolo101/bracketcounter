@@ -1,8 +1,66 @@
-import { Graphics, Sprite, Text, Texture } from "pixi.js";
+import {
+    type Application,
+    Assets,
+    ColorMatrixFilter,
+    Graphics,
+    type ICanvas,
+    Sprite,
+    Text,
+    Texture
+} from "pixi.js";
 import type { StatModule } from "../statmodule";
 import { ordinal } from "../statmodule";
 import { history, latestMessage } from "../app";
-import type { SocketMessageData } from "../socket";
+import type { Contestants, SocketMessageData } from "../socket";
+import anime from "animejs";
+
+const texture = Texture.from("dots_alpha.png")
+texture.baseTexture.setSize(32, 32)
+
+type Useful = {
+    appWidth: number,
+    appHeight: number,
+    contestantVotes: [string, number][],
+    key: string,
+    votes: number,
+    sortedVotes: [string, number][],
+    placement: number,
+    range: number,
+    len: number,
+    contestants: Contestants,
+    name: string,
+    colour: string,
+}
+const getUseful = (app: Application<ICanvas>, stats: SocketMessageData, index: number): Useful => {
+    const appWidth = app.view.width;
+    const appHeight = app.view.height;
+
+    const contestantVotes = Object.entries(stats.votes)
+    const [key, votes]: [string, number] = contestantVotes[index]
+    const sortedVotes = contestantVotes
+        .sort((a, b) => b[1] - a[1])
+    const placement = sortedVotes
+        .findIndex(([k, v]) => k === key)
+    const range = getRange(stats.votes)
+    const len = Object.entries(stats.votes).length + 5
+    const contestants = stats.config.contestants
+    const [name, colour] = contestants[key]
+
+    return {
+        appWidth,
+        appHeight,
+        contestantVotes,
+        key,
+        votes,
+        sortedVotes,
+        placement,
+        range,
+        len,
+        contestants,
+        name,
+        colour,
+    }
+}
 
 const whatTeam = (key: string) => {
     switch (key) {
@@ -25,6 +83,250 @@ const whatTeam = (key: string) => {
     }
 }
 
+const stringHexToNum = (hex: string) => parseInt(hex.substring(1), 16)
+
+class Bar {
+    app: Application<ICanvas>
+    index: number
+    closeCall: boolean
+    positionHistory: number[] // every 1 tick, for 10 ticks
+    bar: Graphics
+    mask: Graphics
+    icon: Sprite
+    text: {
+        name: Text,
+        votes: Text,
+        votesInfo: Text,
+        leaderboardIndex: Text,
+        leaderboardIndexVoteLetter: Text,
+    }
+
+    constructor(index: number, app: Application<ICanvas>) {
+        this.index = index
+        this.app = app
+        this.closeCall = false
+        this.positionHistory = []
+        this.bar = new Graphics()
+        this.mask = new Graphics()
+        this.icon = new Sprite()
+        this.text = {
+            name: new Text("", {
+                // fontFamily: "monospace",
+                fontSize: 36,
+                // breakWords: true,
+                fontFamily: ["Inter", "sans-serif"],
+                fontWeight: "700",
+                dropShadow: true,
+                dropShadowAlpha: 0.5,
+                dropShadowDistance: 3,
+                lineHeight: 35,
+                wordWrap: true,
+                fill: "#ffffff",
+                // fill: contestants[votes[i][0]][1],
+            }),
+            votes: new Text("", {
+                fill: [
+                    0xffffff,
+                    0xffffff,
+                ],
+                // fill: contestants[votes[i][0]][1],
+                // fontFamily: "monospace",
+                fontSize: 34,
+                fontWeight: "bold",
+                fillGradientStops: [0.1, 0.8],
+                // dropShadow: true,
+                // dropShadowAlpha: 0.2,
+                // dropShadowDistance: 6
+            }),
+            votesInfo: new Text("", {
+                fill: 0xffffff,
+                // fill: contestants[votes[i][0]][1],
+                // fontFamily: "monospace",
+                fontSize: 16,
+                fontWeight: "bold",
+                // dropShadow: true,
+                // dropShadowAlpha: 0.2,
+                // dropShadowDistance: 6
+            }),
+            leaderboardIndex: new Text("", {
+                fill: 0xffffff,
+                fontFamily: "monospace",
+                fontSize: 34,
+                fontWeight: "bold",
+                // dropShadow: true,
+                // dropShadowAlpha: 0.2,
+                // dropShadowDistance: 6
+                // fill: contestants[votes[i][0]][1],
+            }),
+            leaderboardIndexVoteLetter: new Text("", {
+                fill: 0xffffff,
+                fontFamily: "monospace",
+                fontSize: 18,
+                fontWeight: "bold",
+                // dropShadow: true,
+                // dropShadowAlpha: 0.2,
+                // dropShadowDistance: 6
+                // fill: contestants[votes[i][0]][1],
+            })
+        }
+
+        this.text.name.alpha = 0.5
+        this.text.votesInfo.alpha = 0.5
+
+        app.stage.addChild(this.bar, this.icon, this.text.name, this.text.votes, this.text.votesInfo, this.text.leaderboardIndex, this.text.leaderboardIndexVoteLetter)
+    }
+
+    async setTexture(stats: SocketMessageData) {
+        const contestantVotes = Object.entries(stats.votes)
+        const [key, votes]: [string, number] = contestantVotes[this.index]
+        const contestants = stats.config.contestants
+        const [name, colour] = contestants[key]
+        const u = getUseful(this.app, stats, this.index)
+        const y = 20 + (u.placement * (u.appHeight / u.len + 20))
+
+        // mask
+
+        this.icon.texture = await Assets.load(`characters/${name}.webp`)
+        // this.icon.roundPixels = false
+        this.icon.mask = this.mask
+        this.icon.height = 64
+        this.icon.width = this.icon.texture.width * (this.icon.height / this.icon.texture.height)
+        this.icon.alpha = 0.5
+        this.icon.position.y = y + 32
+
+        const colorMatrix = new ColorMatrixFilter()
+        console.log(colour.substring(1), stringHexToNum(colour))
+        colorMatrix.desaturate()
+        // colorMatrix.tint(stringHexToNum(colour))
+
+        // this.icon.filters = [colorMatrix]
+
+        this.bar.eventMode = "dynamic"
+        this.bar.on("mouseover", () => {
+            // animate icon bouncing up
+            anime({
+                targets: this.icon,
+                y: this.icon.y - 20,
+                alpha: 1,
+                duration: 200,
+                easing: "easeInOutBack",
+                complete: () => this.icon.position.y = y + 12
+                // update: () => this.icon.position.y = wrap.y
+            })
+            // this.icon.alpha = 1
+            // this.icon.filters = []
+        })
+        this.bar.on("mouseout", () => {
+            // animate icon bouncing down
+            anime({
+                targets: this.icon,
+                y: this.icon.y + 20,
+                duration: 200,
+                alpha: 0.5,
+                easing: "easeInOutBack",
+                complete: () => this.icon.position.y = y + 32
+                // update: () => this.icon.position.y = wrap.y
+            })
+            this.icon.alpha = 0.5
+            // this.icon.filters = [colorMatrix]
+        })
+    }
+
+    moveIcon(y: number) {
+        this.icon.position.y = y + 32
+    }
+
+    update(stats: SocketMessageData, lastTimesVotes: Record<string, number[]>) {
+        // setup variables
+        const u = getUseful(this.app, stats, this.index)
+        const dangerZone = u.sortedVotes.at(-1)![1] + 150
+
+        // then do stuff
+
+        const displayVotes = this.closeCall ? Math.round(u.votes / 100) * 100 : u.votes
+        const ratioToFirst = displayVotes / u.sortedVotes[0][1]
+        // const width = (appWidth * 0.6) * ratioToFirst
+        const width = (u.appWidth / 10) * (displayVotes / u.range)
+
+        const x = 100
+        const y = 20 + (u.placement * (u.appHeight / u.len + 20))
+
+        // TODO: Put in another function?
+        const backgroundColour = "#FDC900"
+
+        this.bar.clear()
+        this.bar.beginFill(backgroundColour)
+        this.bar.drawRect(5, y, 3, u.appHeight / u.len)
+
+        this.bar.beginFill(u.colour)
+        this.bar.drawRect(x, y, width, u.appHeight / u.len)
+        this.bar.beginTextureFill({
+            color: u.colour,
+            texture
+        })
+
+        if (this.closeCall) {
+            this.bar.beginFill(u.colour, 0.2)
+            this.bar.drawRect(x, y, width + 10, u.appHeight / u.len)
+        }
+
+        // TODO: Changes "votes" so that it doesnt eventually clip out of the window
+        this.bar.drawRect(x, y, width, u.appHeight / u.len)
+        this.bar.endFill()
+        this.mask = this.bar.clone()
+
+        this.text.name.text = u.name
+        this.text.name.setTransform(x + 5, y)
+        // this.text.name.style.fontSize = width / 4;
+        this.text.name.width = clamp((width - 10) * 0.95, 80, 120)
+        // this.text.name.height = (appHeight / len) * 0.7
+
+        if (this.closeCall) {
+            this.text.leaderboardIndex.text = "--"
+            this.text.votes.text = "~" + displayVotes
+            this.text.votes.setTransform(x + 10 + width + 10, y + 2)
+        } else {
+            this.text.leaderboardIndex.text = ordinal(u.placement + 1)
+            this.text.leaderboardIndexVoteLetter.text = `[${u.key.toUpperCase()}]`
+            this.text.leaderboardIndexVoteLetter.style.fill = u.colour
+            this.text.votes.setTransform(x + 10 + width, y - 4)
+            this.text.votes.text = displayVotes
+            this.text.votes.style.fill = ["#ffffff", u.colour]
+            // voteLineBarVoteCountTextInfo[i].text = `Avg gain: + ${getAverageGainPerMinute(lastTimesVotes[key])}, Since Last Refresh: + ${lastTimesVotes[key].at(-1)}`
+            this.text.votesInfo.text = `+${getLatestGain(lastTimesVotes[u.key])}, ~${getAverageGainPerMinute(lastTimesVotes[u.key]).toPrecision(2)} per minute`
+            this.text.votesInfo.setTransform(x + 10 + width, y + 32)
+        }
+
+        if (dangerZone > u.votes) {
+            this.text.leaderboardIndex.style.fill = "#ff6a00"
+        }
+
+        this.icon.position.x = x + width - 70
+        this.text.leaderboardIndex.setTransform(x - 80, y + 8)
+        this.text.leaderboardIndexVoteLetter.setTransform(x - 66, y + 40)
+        this.text.name.style.wordWrapWidth = (width - 10)
+    }
+
+    onTick(stats: SocketMessageData) {
+        const u = getUseful(this.app, stats, this.index)
+
+        // position history housekeeping
+        this.positionHistory.push(u.placement)
+        if (this.positionHistory.length > 10) this.positionHistory.shift()
+
+        const changedPosition = this.positionHistory[0] !== this.positionHistory.at(-1)
+        if (changedPosition) {
+            const y = 20 + (u.placement * (u.appHeight / u.len + 20))
+            this.moveIcon(y)
+        }
+    }
+
+    // private calculateBarWidth() {
+    //     const ratioToFirst = displayVotes / sorted.at(0)![1]
+    //     const width = (appWidth * 0.6) * ratioToFirst
+    // }
+}
+
 // function iterateOverContestants(stats: SocketMessageData, func: (contestants: [string, number]) => void) {
 //     const sorted = Object.entries(stats.votes).sort((a, b) => b[1] - a[1])
 //     for (const [key, votes] of sorted) {
@@ -39,6 +341,8 @@ export const barModule: StatModule = {
     render(app, stats) {
         Text.defaultResolution = 2;
         Text.defaultAutoResolution = false;
+        const bars: Bar[] = []
+
         // const t = Texture.from("Pie.webp")
         // i want 1000 sprites
         // const snowSprites = new Array(100)
@@ -77,96 +381,106 @@ export const barModule: StatModule = {
                 lastTimesVotes[key].push(votes)
                 if (lastTimesVotes[key].length > 10) lastTimesVotes[key].shift()
             }
+
+            for (const bar of bars) {
+                bar.onTick(stats)
+            }
         })
 
         const votes = Object.entries(stats.votes)
         const contestants = stats.config.contestants
         const background = new Graphics()
         const bar = new Graphics()
+        let setTextures = false;
         background.beginFill(0x000000)
         background.drawRect(0, 0, 9999, 9999)
         background.endFill()
 
 
-        const voteLineNumberText = new Array(votes.length)
-            .fill(0)
-            .map((_, i) => new Text("", {
-                // fontFamily: "monospace",
-                fontSize: 36,
-                // breakWords: true,
-                fontFamily: ["Inter", "sans-serif"],
-                fontWeight: "700",
-                dropShadow: true,
-                dropShadowAlpha: 0.5,
-                dropShadowDistance: 3,
-                lineHeight: 35,
-                wordWrap: true,
-                fill: "#ffffff",
-                // fill: contestants[votes[i][0]][1],
-            }))
-
-        voteLineNumberText.forEach(nt => nt.alpha = 0.5)
-
-        const voteLineLeaderboardIndexText = new Array(votes.length)
-            .fill(0)
-            .map((_, i) => new Text("", {
-                fill: 0xffffff,
-                fontFamily: "monospace",
-                fontSize: 34,
-                fontWeight: "bold",
-                // dropShadow: true,
-                // dropShadowAlpha: 0.2,
-                // dropShadowDistance: 6
-                // fill: contestants[votes[i][0]][1],
-            }))
-
-        const voteLineLeaderboardIndexVoteLetterText = new Array(votes.length)
-            .fill(0)
-            .map((_, i) => new Text("", {
-                fill: 0xffffff,
-                fontFamily: "monospace",
-                fontSize: 18,
-                fontWeight: "bold",
-                // dropShadow: true,
-                // dropShadowAlpha: 0.2,
-                // dropShadowDistance: 6
-                // fill: contestants[votes[i][0]][1],
-            }))
-
-        const voteLineBarVoteCountText = new Array(votes.length)
-            .fill(0)
-            .map((_, i) => new Text("", {
-                fill: [
-                    0xffffff,
-                    0xffffff,
-                ],
-                // fill: contestants[votes[i][0]][1],
-                // fontFamily: "monospace",
-                fontSize: 34,
-                fontWeight: "bold",
-                fillGradientStops: [0.1, 0.8],
-                // dropShadow: true,
-                // dropShadowAlpha: 0.2,
-                // dropShadowDistance: 6
-            }))
-
-        const voteLineBarVoteCountTextInfo = new Array(votes.length)
-            .fill(0)
-            .map((_, i) => new Text("", {
-                fill: 0xffffff,
-                // fill: contestants[votes[i][0]][1],
-                // fontFamily: "monospace",
-                fontSize: 16,
-                fontWeight: "bold",
-                // dropShadow: true,
-                // dropShadowAlpha: 0.2,
-                // dropShadowDistance: 6
-            }))
-        voteLineBarVoteCountTextInfo.forEach(t => t.alpha = 0.5)
+        // const voteLineNumberText = new Array(votes.length)
+        //     .fill(0)
+        //     .map((_, i) => new Text("", {
+        //         // fontFamily: "monospace",
+        //         fontSize: 36,
+        //         // breakWords: true,
+        //         fontFamily: ["Inter", "sans-serif"],
+        //         fontWeight: "700",
+        //         dropShadow: true,
+        //         dropShadowAlpha: 0.5,
+        //         dropShadowDistance: 3,
+        //         lineHeight: 35,
+        //         wordWrap: true,
+        //         fill: "#ffffff",
+        //         // fill: contestants[votes[i][0]][1],
+        //     }))
+        //
+        // voteLineNumberText.forEach(nt => nt.alpha = 0.5)
+        //
+        // const voteLineLeaderboardIndexText = new Array(votes.length)
+        //     .fill(0)
+        //     .map((_, i) => new Text("", {
+        //         fill: 0xffffff,
+        //         fontFamily: "monospace",
+        //         fontSize: 34,
+        //         fontWeight: "bold",
+        //         // dropShadow: true,
+        //         // dropShadowAlpha: 0.2,
+        //         // dropShadowDistance: 6
+        //         // fill: contestants[votes[i][0]][1],
+        //     }))
+        //
+        // const voteLineLeaderboardIndexVoteLetterText = new Array(votes.length)
+        //     .fill(0)
+        //     .map((_, i) => new Text("", {
+        //         fill: 0xffffff,
+        //         fontFamily: "monospace",
+        //         fontSize: 18,
+        //         fontWeight: "bold",
+        //         // dropShadow: true,
+        //         // dropShadowAlpha: 0.2,
+        //         // dropShadowDistance: 6
+        //         // fill: contestants[votes[i][0]][1],
+        //     }))
+        //
+        // const voteLineBarVoteCountText = new Array(votes.length)
+        //     .fill(0)
+        //     .map((_, i) => new Text("", {
+        //         fill: [
+        //             0xffffff,
+        //             0xffffff,
+        //         ],
+        //         // fill: contestants[votes[i][0]][1],
+        //         // fontFamily: "monospace",
+        //         fontSize: 34,
+        //         fontWeight: "bold",
+        //         fillGradientStops: [0.1, 0.8],
+        //         // dropShadow: true,
+        //         // dropShadowAlpha: 0.2,
+        //         // dropShadowDistance: 6
+        //     }))
+        //
+        // const voteLineBarVoteCountTextInfo = new Array(votes.length)
+        //     .fill(0)
+        //     .map((_, i) => new Text("", {
+        //         fill: 0xffffff,
+        //         // fill: contestants[votes[i][0]][1],
+        //         // fontFamily: "monospace",
+        //         fontSize: 16,
+        //         fontWeight: "bold",
+        //         // dropShadow: true,
+        //         // dropShadowAlpha: 0.2,
+        //         // dropShadowDistance: 6
+        //     }))
+        // voteLineBarVoteCountTextInfo.forEach(t => t.alpha = 0.5)
 
         // const text = new Text("Hello, World!")
         // app.stage.addChild(background, ...snowSprites, bar, ...voteLineNumberText, ...voteLineLeaderboardIndexText, ...voteLineLeaderboardIndexVoteLetterText, ...voteLineBarVoteCountText, ...voteLineBarVoteCountTextInfo);
-        app.stage.addChild(background, bar, ...voteLineNumberText, ...voteLineLeaderboardIndexText, ...voteLineLeaderboardIndexVoteLetterText, ...voteLineBarVoteCountText, ...voteLineBarVoteCountTextInfo);
+        app.stage.addChild(background, bar);
+
+        // hardcode for now
+        for (let i = 0; i < 5; i++) {
+            bars.push(new Bar(i, app))
+        }
         // app.stage.addChild(text);
 
         const texture = Texture.from("dots_alpha.png")
@@ -175,13 +489,17 @@ export const barModule: StatModule = {
         let counter = 0;
         app.ticker.add(() => {
             const appWidth = app.view.width;
-            const appHeight = app.view.height;
-            const appRatio = appWidth / appHeight
+            // const appHeight = app.view.height;
+            // const appRatio = appWidth / appHeight
             counter++;
             app.resize()
 
-            let len = Object.entries(stats.votes).length + 5
+            // let len = Object.entries(stats.votes).length + 5
             let range = getRange(stats.votes)
+            const sorted = Object.entries(stats.votes).sort((a, b) => b[1] - a[1])
+
+
+            // let widthOf1000 = sorted.at(0)![1] / (appWidth * 0.2)
             let widthOf1000 = (appWidth / 10) * (1000 / range)
 
             background.clear()
@@ -210,73 +528,82 @@ export const barModule: StatModule = {
             // console.log(lastTimesVotes)
             // console.log(lastTimesVotes["a"])
 
-            bar.clear()
             let i = 0;
-            const sorted = Object.entries(stats.votes).sort((a, b) => b[1] - a[1])
-            for (const [key, votes] of sorted) {
-                const name = contestants[key][0]
-                const colour = contestants[key][1]
+            for (const bar of bars) {
+                if (!setTextures) {
+                    bar.setTexture(stats)
+                }
+                bar.update(stats, lastTimesVotes)
+            }
+            setTextures = true
 
-                const previousContestant = sorted[i - 1]
-                const previousContestantVotes = previousContestant ? previousContestant[1] : 0
-                const nextContestant = sorted[i + 1]
-                const nextContestantVotes = nextContestant ? nextContestant[1] : 0
-                // const closeCall = anyClose(votes, nextContestantVotes) || anyClose(votes, previousContestantVotes)
-                const closeCall = false
-                const displayVotes = closeCall ? Math.round(votes / 100) * 100 : votes
+
+            for (const [key, votes] of sorted) {
+                // const name = contestants[key][0]
                 // const colour = contestants[key][1]
 
-                const width = (appWidth / 10) * (displayVotes / range)
-                voteLineNumberText[i].style.wordWrapWidth = (width - 10)
+                // const previousContestant = sorted[i - 1]
+                // const previousContestantVotes = previousContestant ? previousContestant[1] : 0
+                // const nextContestant = sorted[i + 1]
+                // const nextContestantVotes = nextContestant ? nextContestant[1] : 0
+                // const closeCall = anyClose(votes, nextContestantVotes) || anyClose(votes, previousContestantVotes)
+                // const closeCall = false
+                // const displayVotes = closeCall ? Math.round(votes / 100) * 100 : votes
+                // const colour = contestants[key][1]
+
+                // const ratioToFirst = displayVotes / sorted.at(0)![1]
+                // const width = (appWidth / 10) * (displayVotes / range)
+                // const width = (appWidth * 0.6) * ratioToFirst
+                // voteLineNumberText[i].style.wordWrapWidth = (width - 10)
                 // const width = votes / 10
-                const x = 100
-                const y = 20 + (i * (appHeight / len + 20))
+                // const x = 100
+                // const y = 20 + (i * (appHeight / len + 20))
 
                 // const backgroundColour = whatTeam(key) ? "#FDC900" : "#fd8fbe"
-                const backgroundColour = "#FDC900"
+                // const backgroundColour = "#FDC900"
 
-                bar.beginFill(backgroundColour)
-                bar.drawRect(5, y, 3, appHeight / len)
-
-                bar.beginFill(colour)
-                bar.drawRect(x, y, width, appHeight / len)
-                bar.beginTextureFill({
-                    color: colour,
-                    texture
-                })
-
-                if (closeCall) {
-                    bar.beginFill(colour, 0.2)
-                    bar.drawRect(x, y, width + 10, appHeight / len)
-                }
-
-                // TODO: Changes "votes" so that it doesnt eventually clip out of the window
-                bar.drawRect(x, y, width, appHeight / len)
-                bar.endFill()
-
-                voteLineNumberText[i].text = name
-                voteLineNumberText[i].setTransform(x + 5, y)
-                // voteLineNumberText[i].style.fontSize = width / 4;
-                voteLineNumberText[i].width = clamp((width - 10) * 0.95, 80, 120)
-                // voteLineNumberText[i].height = (appHeight / len) * 0.7
-
-                if (closeCall) {
-                    voteLineLeaderboardIndexText[i].text = "--"
-                    voteLineBarVoteCountText[i].text = "~" + displayVotes
-                    voteLineBarVoteCountText[i].setTransform(x + 10 + width + 10, y + 2)
-                } else {
-                    voteLineLeaderboardIndexText[i].text = ordinal(i + 1)
-                    voteLineLeaderboardIndexVoteLetterText[i].text = `[${key.toUpperCase()}]`
-                    voteLineLeaderboardIndexVoteLetterText[i].style.fill = colour
-                    voteLineBarVoteCountText[i].setTransform(x + 10 + width, y - 4)
-                    voteLineBarVoteCountText[i].text = displayVotes
-                    voteLineBarVoteCountText[i].style.fill = ["#ffffff", colour]
-                    // voteLineBarVoteCountTextInfo[i].text = `Avg gain: + ${getAverageGainPerMinute(lastTimesVotes[key])}, Since Last Refresh: + ${lastTimesVotes[key].at(-1)}`
-                    voteLineBarVoteCountTextInfo[i].text = `+${getLatestGain(lastTimesVotes[key])}, ~${getAverageGainPerMinute(lastTimesVotes[key]).toPrecision(2)} per minute`
-                    voteLineBarVoteCountTextInfo[i].setTransform(x + 10 + width, y + 32)
-                }
-                voteLineLeaderboardIndexText[i].setTransform(x - 80, y + 8)
-                voteLineLeaderboardIndexVoteLetterText[i].setTransform(x - 66, y + 40)
+                // bar.beginFill(backgroundColour)
+                // bar.drawRect(5, y, 3, appHeight / len)
+                //
+                // bar.beginFill(colour)
+                // bar.drawRect(x, y, width, appHeight / len)
+                // bar.beginTextureFill({
+                //     color: colour,
+                //     texture
+                // })
+                //
+                // if (closeCall) {
+                //     bar.beginFill(colour, 0.2)
+                //     bar.drawRect(x, y, width + 10, appHeight / len)
+                // }
+                //
+                // // TODO: Changes "votes" so that it doesnt eventually clip out of the window
+                // bar.drawRect(x, y, width, appHeight / len)
+                // bar.endFill()
+                //
+                // voteLineNumberText[i].text = name
+                // voteLineNumberText[i].setTransform(x + 5, y)
+                // // voteLineNumberText[i].style.fontSize = width / 4;
+                // voteLineNumberText[i].width = clamp((width - 10) * 0.95, 80, 120)
+                // // voteLineNumberText[i].height = (appHeight / len) * 0.7
+                //
+                // if (closeCall) {
+                //     voteLineLeaderboardIndexText[i].text = "--"
+                //     voteLineBarVoteCountText[i].text = "~" + displayVotes
+                //     voteLineBarVoteCountText[i].setTransform(x + 10 + width + 10, y + 2)
+                // } else {
+                //     voteLineLeaderboardIndexText[i].text = ordinal(i + 1)
+                //     voteLineLeaderboardIndexVoteLetterText[i].text = `[${key.toUpperCase()}]`
+                //     voteLineLeaderboardIndexVoteLetterText[i].style.fill = colour
+                //     voteLineBarVoteCountText[i].setTransform(x + 10 + width, y - 4)
+                //     voteLineBarVoteCountText[i].text = displayVotes
+                //     voteLineBarVoteCountText[i].style.fill = ["#ffffff", colour]
+                //     // voteLineBarVoteCountTextInfo[i].text = `Avg gain: + ${getAverageGainPerMinute(lastTimesVotes[key])}, Since Last Refresh: + ${lastTimesVotes[key].at(-1)}`
+                //     voteLineBarVoteCountTextInfo[i].text = `+${getLatestGain(lastTimesVotes[key])}, ~${getAverageGainPerMinute(lastTimesVotes[key]).toPrecision(2)} per minute`
+                //     voteLineBarVoteCountTextInfo[i].setTransform(x + 10 + width, y + 32)
+                // }
+                // voteLineLeaderboardIndexText[i].setTransform(x - 80, y + 8)
+                // voteLineLeaderboardIndexVoteLetterText[i].setTransform(x - 66, y + 40)
 
                 // const textScale = Math.max(900, appWidth) / 900
                 //

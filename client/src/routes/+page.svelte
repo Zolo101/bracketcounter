@@ -16,7 +16,7 @@
         latestMessage.subscribe(v => {
             if (v === undefined) deadline = -1
             // console.log(v)
-            deadline = v.status.deadline
+            deadline = v?.status.deadline
         })
     })
 
