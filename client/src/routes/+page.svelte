@@ -15,6 +15,7 @@
 
         latestMessage.subscribe(v => {
             if (v === undefined) deadline = -1
+            // console.log(v)
             deadline = v.status.deadline
         })
     })
@@ -51,7 +52,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="/icon.png" type="image/x-icon"/>
-    <title>Bracketcounter</title>
+    <title>[bc]</title>
 
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-9NR4C4M5T0"></script>
@@ -64,22 +65,22 @@
     </script>
 </svelte:head>
 
-{#if deadline === -1}
-    <div class="flex w-full h-full bg-black">
-        <img class="m-auto" src="bc_wait.png" height="512" width="512"/>
-    </div>
-{:else}
+<!--{#if deadline !== -1}-->
+<!--    <div class="flex w-full h-full bg-black">-->
+<!--        <img class="m-auto" src="bc_wait.png" height="512" width="512"/>-->
+<!--    </div>-->
+<!--{:else}-->
     {#if acceptedTerms}
         <div class="flex flex-col h-full">
             <div class="flex items-center justify-around text-white text-5xl min-h-[66px] grow px-5 z-10">
                 <span class="title p-2">[bc]</span>
-                <span class="text-orange-500 text-xl font-bold">These results are UNCONFIRMED and will differ from the official count!</span>
+<!--                <span class="text-orange-500 text-xl font-bold">These results are UNCONFIRMED and will differ from the official count!</span>-->
         <!--        <span class="text-4xl text-red-600" style="font-family: 'Comic Sans MS', 'Comic Neue', sans-serif;">unofficial unconfirmed!!1!</span>-->
         <!--        <span class="text-xl text-orange-400">WIP mod of figgyc bracketcounter</span>-->
         <!--        <a href="https://github.com/zolo101/bracketcounter" class="text-xl !text-yellow-400 hover:underline">(Github Repo)</a>-->
-        <!--        <span class="bg-white/10 p-2 rounded-xl" class:end={!countdown}>{countdownText}</span>-->
+                <span class="bg-white/10 p-2 rounded-xl" class:end={!countdown}>{countdownText}</span>
         <!--        <span class="text-xl text-green-400">For now, close contestants are rounded to discourage alt voting</span>-->
-        <!--        <Live/>-->
+                <Live/>
             </div>
         <!--<div id="status" class="text-white"></div>-->
         <!--<div id="graph" class="w-full h-3/5 v2s"></div>-->
@@ -107,7 +108,7 @@
                 <p class="font-bold text-4xl text-center">Before you use this website please read and agree to the following:</p>
                 <h3>Disclaimer</h3>
                 <ul>
-                    <li style="color: yellow"><strong>Spoiler warning!</strong> This website contains unofficial predictions of BFB results so do not click through if you do not want to find out who is eliminated.</li>
+                    <li style="color: yellow"><strong>Spoiler warning!</strong> This website contains unofficial predictions of TPOT results so do not click through if you do not want to find out who is eliminated.</li>
                     <li class="text-orange-500"><strong>Notice</strong> This is a modified version of <a href="https://bracket.figgyc.uk/live/">figgyc's bracketcounter</a>!</li>
                     <li>This website counts votes with comment data sourced from YouTube's Data API however the counting is done independently from YouTube and is not endorsed by YouTube or anyone else and no guarantee is made towards its accuracy or validity.</li>
                 </ul>
@@ -145,7 +146,7 @@
             </div>
         </div>
     {/if}
-{/if}
+<!--{/if}-->
 
 <style>
     h3 {
@@ -173,14 +174,14 @@
         font-family: Nabla;
         base-palette: 4;
         override-colors:
-            8 rgb(249, 141, 187),
-            7 rgb(155, 205, 83),
-            6 rgb(155, 205, 83),
-            5 rgb(155, 205, 83),
-            4 rgb(249, 141, 187),
-            3 rgb(249, 141, 187),
-            2 rgb(249, 141, 187),
-            1 rgb(249, 141, 187);
+            8 rgb(253, 201, 0),
+            7 rgb(0, 0, 0),
+            6 rgb(0, 0, 0),
+            5 rgb(0, 0, 0),
+            4 rgb(253, 201, 0),
+            3 rgb(253, 201, 0),
+            2 rgb(253, 201, 0),
+            1 rgb(253, 201, 0);
     }
 
     .end {

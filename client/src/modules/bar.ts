@@ -166,7 +166,8 @@ export const barModule: StatModule = {
                 const x = 100
                 const y = 20 + (i * (appHeight / len + 20))
 
-                const backgroundColour = whatTeam(key) ? "#9dcf4b" : "#fd8fbe"
+                // const backgroundColour = whatTeam(key) ? "#FDC900" : "#fd8fbe"
+                const backgroundColour = "#FDC900"
 
                 bar.beginFill(backgroundColour)
                 bar.drawRect(x - 10, y, 100, appHeight / len)
