@@ -1,7 +1,8 @@
-import { Graphics, Text, Texture } from "pixi.js";
+import { Graphics, Sprite, Text, Texture } from "pixi.js";
 import type { StatModule } from "../statmodule";
 import { ordinal } from "../statmodule";
 import { history, latestMessage } from "../app";
+import type { SocketMessageData } from "../socket";
 
 const whatTeam = (key: string) => {
     switch (key) {
@@ -24,10 +25,36 @@ const whatTeam = (key: string) => {
     }
 }
 
+// function iterateOverContestants(stats: SocketMessageData, func: (contestants: [string, number]) => void) {
+//     const sorted = Object.entries(stats.votes).sort((a, b) => b[1] - a[1])
+//     for (const [key, votes] of sorted) {
+//         func([key, votes])
+//     }
+// }
+
+const clamp = (num: number, min: number, max: number) => Math.min(Math.max(num, min), max)
 
 export const barModule: StatModule = {
     name: "Bar",
     render(app, stats) {
+        // const t = Texture.from("Pie.webp")
+        // i want 1000 sprites
+        // const snowSprites = new Array(100)
+        //     .fill(0)
+        //     .map(() => new Sprite(t))
+        //     .map((s) => s.setTransform(0, 0, 0.01, 0.01))
+        // t.baseTexture.setSize(32, 32)
+
+
+
+        // const s = new Sprite(t)
+        // s.setTransform(0, 0, 0.04, 0.04)
+
+
+
+
+
+
         const lastTimesVotes: Record<string, number[]> = {} // 10 tick history of last vote count rise amounts
         lastTimesVotes["a"] = [] // :(
         lastTimesVotes["b"] = []
@@ -64,15 +91,22 @@ export const barModule: StatModule = {
             .map((_, i) => new Text("", {
                 // fontFamily: "monospace",
                 fontSize: 36,
-                fontWeight: "bold",
+                // breakWords: true,
+                fontFamily: ["Inter", "sans-serif"],
+                fontWeight: "700",
                 dropShadow: true,
                 dropShadowAlpha: 0.5,
                 dropShadowDistance: 3,
+                lineHeight: 35,
+                wordWrap: true,
                 fill: "#ffffff",
                 // fill: contestants[votes[i][0]][1],
             }))
 
-        voteLineNumberText.forEach(nt => nt.alpha = 0.5)
+        voteLineNumberText.forEach(nt => {
+            nt.alpha = 0.5
+            nt.resolution = 2
+        })
 
         const voteLineLeaderboardIndexText = new Array(votes.length)
             .fill(0)
@@ -87,14 +121,31 @@ export const barModule: StatModule = {
                 // fill: contestants[votes[i][0]][1],
             }))
 
-        const voteLineBarVoteCountText = new Array(votes.length)
+        const voteLineLeaderboardIndexVoteLetterText = new Array(votes.length)
             .fill(0)
             .map((_, i) => new Text("", {
                 fill: 0xffffff,
+                fontFamily: "monospace",
+                fontSize: 18,
+                fontWeight: "bold",
+                // dropShadow: true,
+                // dropShadowAlpha: 0.2,
+                // dropShadowDistance: 6
+                // fill: contestants[votes[i][0]][1],
+            }))
+
+        const voteLineBarVoteCountText = new Array(votes.length)
+            .fill(0)
+            .map((_, i) => new Text("", {
+                fill: [
+                    0xffffff,
+                    0xffffff,
+                ],
                 // fill: contestants[votes[i][0]][1],
                 // fontFamily: "monospace",
                 fontSize: 34,
                 fontWeight: "bold",
+                fillGradientStops: [0.1, 0.8],
                 // dropShadow: true,
                 // dropShadowAlpha: 0.2,
                 // dropShadowDistance: 6
@@ -115,7 +166,8 @@ export const barModule: StatModule = {
         voteLineBarVoteCountTextInfo.forEach(t => t.alpha = 0.5)
 
         // const text = new Text("Hello, World!")
-        app.stage.addChild(background, bar, ...voteLineNumberText, ...voteLineLeaderboardIndexText, ...voteLineBarVoteCountText, ...voteLineBarVoteCountTextInfo);
+        // app.stage.addChild(background, ...snowSprites, bar, ...voteLineNumberText, ...voteLineLeaderboardIndexText, ...voteLineLeaderboardIndexVoteLetterText, ...voteLineBarVoteCountText, ...voteLineBarVoteCountTextInfo);
+        app.stage.addChild(background, bar, ...voteLineNumberText, ...voteLineLeaderboardIndexText, ...voteLineLeaderboardIndexVoteLetterText, ...voteLineBarVoteCountText, ...voteLineBarVoteCountTextInfo);
         // app.stage.addChild(text);
 
         const texture = Texture.from("dots_alpha.png")
@@ -125,6 +177,7 @@ export const barModule: StatModule = {
         app.ticker.add(() => {
             const appWidth = app.view.width;
             const appHeight = app.view.height;
+            const appRatio = appWidth / appHeight
             counter++;
             app.resize()
 
@@ -136,12 +189,24 @@ export const barModule: StatModule = {
             background.beginFill({h: counter, s: 100, v: 10})
             background.drawRect(0, 0, 9999, 9999)
             background.beginFill(0xffffff, 0.1)
-            let j = 0;
+            let j = 100;
             while (j < appWidth) {
                 background.drawRect(j, 0, 4, 9999)
                 j += widthOf1000;
             }
             background.endFill()
+
+            // for (const sprite of snowSprites) {
+            //     sprite.x += 5
+            //     sprite.y += 5
+            //     if (sprite.y > appHeight) {
+            //         sprite.y = -(Math.random() * appHeight)
+            //     }
+            //     if (sprite.x > appWidth) {
+            //         sprite.y = -(Math.random() * appHeight)
+            //         sprite.x = (Math.random() * appWidth) - appWidth / 2
+            //     }
+            // }
 
             // console.log(lastTimesVotes)
             // console.log(lastTimesVotes["a"])
@@ -161,7 +226,9 @@ export const barModule: StatModule = {
                 const closeCall = false
                 const displayVotes = closeCall ? Math.round(votes / 100) * 100 : votes
                 // const colour = contestants[key][1]
+
                 const width = (appWidth / 10) * (displayVotes / range)
+                voteLineNumberText[i].style.wordWrapWidth = (width - 10)
                 // const width = votes / 10
                 const x = 100
                 const y = 20 + (i * (appHeight / len + 20))
@@ -170,7 +237,7 @@ export const barModule: StatModule = {
                 const backgroundColour = "#FDC900"
 
                 bar.beginFill(backgroundColour)
-                bar.drawRect(x - 10, y, 100, appHeight / len)
+                bar.drawRect(5, y, 3, appHeight / len)
 
                 bar.beginFill(colour)
                 bar.drawRect(x, y, width, appHeight / len)
@@ -188,8 +255,11 @@ export const barModule: StatModule = {
                 bar.drawRect(x, y, width, appHeight / len)
                 bar.endFill()
 
-                voteLineNumberText[i].text = `${name} [${key.toUpperCase()}]`
+                voteLineNumberText[i].text = name
                 voteLineNumberText[i].setTransform(x + 5, y)
+                // voteLineNumberText[i].style.fontSize = width / 4;
+                voteLineNumberText[i].width = clamp((width - 10) * 0.95, 80, 120)
+                // voteLineNumberText[i].height = (appHeight / len) * 0.7
 
                 if (closeCall) {
                     voteLineLeaderboardIndexText[i].text = "--"
@@ -197,13 +267,17 @@ export const barModule: StatModule = {
                     voteLineBarVoteCountText[i].setTransform(x + 10 + width + 10, y + 2)
                 } else {
                     voteLineLeaderboardIndexText[i].text = ordinal(i + 1)
+                    voteLineLeaderboardIndexVoteLetterText[i].text = `[${key.toUpperCase()}]`
+                    voteLineLeaderboardIndexVoteLetterText[i].style.fill = colour
                     voteLineBarVoteCountText[i].setTransform(x + 10 + width, y - 4)
                     voteLineBarVoteCountText[i].text = displayVotes
+                    voteLineBarVoteCountText[i].style.fill = ["#ffffff", colour]
                     // voteLineBarVoteCountTextInfo[i].text = `Avg gain: + ${getAverageGainPerMinute(lastTimesVotes[key])}, Since Last Refresh: + ${lastTimesVotes[key].at(-1)}`
                     voteLineBarVoteCountTextInfo[i].text = `+${getLatestGain(lastTimesVotes[key])}, ~${getAverageGainPerMinute(lastTimesVotes[key]).toPrecision(2)} per minute`
                     voteLineBarVoteCountTextInfo[i].setTransform(x + 10 + width, y + 32)
                 }
                 voteLineLeaderboardIndexText[i].setTransform(x - 80, y + 8)
+                voteLineLeaderboardIndexVoteLetterText[i].setTransform(x - 66, y + 40)
 
                 // const textScale = Math.max(900, appWidth) / 900
                 //
