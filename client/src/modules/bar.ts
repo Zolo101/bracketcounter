@@ -13,54 +13,11 @@ import { ordinal } from "../statmodule";
 import { history, latestMessage } from "../app";
 import type { Contestants, SocketMessageData } from "../socket";
 import anime from "animejs";
+import { getUseful } from "$lib/useful";
+import { stringHexToNum } from "$lib/misc";
 
 const texture = Texture.from("dots_alpha.png")
 texture.baseTexture.setSize(32, 32)
-
-type Useful = {
-    appWidth: number,
-    appHeight: number,
-    contestantVotes: [string, number][],
-    key: string,
-    votes: number,
-    sortedVotes: [string, number][],
-    placement: number,
-    range: number,
-    len: number,
-    contestants: Contestants,
-    name: string,
-    colour: string,
-}
-const getUseful = (app: Application<ICanvas>, stats: SocketMessageData, index: number): Useful => {
-    const appWidth = app.view.width;
-    const appHeight = app.view.height;
-
-    const contestantVotes = Object.entries(stats.votes)
-    const [key, votes]: [string, number] = contestantVotes[index]
-    const sortedVotes = contestantVotes
-        .sort((a, b) => b[1] - a[1])
-    const placement = sortedVotes
-        .findIndex(([k, v]) => k === key)
-    const range = getRange(stats.votes)
-    const len = Object.entries(stats.votes).length + 5
-    const contestants = stats.config.contestants
-    const [name, colour] = contestants[key]
-
-    return {
-        appWidth,
-        appHeight,
-        contestantVotes,
-        key,
-        votes,
-        sortedVotes,
-        placement,
-        range,
-        len,
-        contestants,
-        name,
-        colour,
-    }
-}
 
 const whatTeam = (key: string) => {
     switch (key) {
@@ -82,8 +39,6 @@ const whatTeam = (key: string) => {
             return true;
     }
 }
-
-const stringHexToNum = (hex: string) => parseInt(hex.substring(1), 16)
 
 class Bar {
     app: Application<ICanvas>

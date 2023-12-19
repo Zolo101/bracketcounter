@@ -28,7 +28,7 @@
 
 
     onMount(async () => {
-        const appDOM = document.querySelector("#app")! as HTMLDivElement
+        const appDOM = document.querySelector(`#app-${$child.appId}`)! as HTMLDivElement
         const app = new Application({
             // width: appDOM.clientWidth,
             // height: appDOM.clientHeight,
@@ -38,11 +38,13 @@
             resizeTo: appDOM,
         })
 
-        appDOM.append(app.view)
+        appDOM.append(app.view as HTMLCanvasElement)
 
         child.subscribe(c => {
-            statModule = c.module!
-            statModule.render(app)
+            if (c.module) {
+                statModule = c.module!
+                statModule.render(app, $latestMessage)
+            }
         })
 
         latestMessage.subscribe(m => {
@@ -62,13 +64,15 @@
                 {/if}
             </div>
 <!--            <button on:click={exportData} class="h-full py-0 px-8 bg-gray-400/40 hover:bg-gray-400 transition-colors cursor-pointer">{"Export"}</button>-->
+<!--            <button class="h-full py-0 px-8 bg-yellow-500/40">{"NEW! Pie Chart"}</button>-->
             <button on:click={edit} class="h-full py-0 px-8 bg-blue-500/40 hover:bg-blue-500 transition-colors cursor-pointer">{"<|>"}</button>
 <!--            <button on:click={remove} class="h-full py-0 px-8 bg-red-500/40 hover:bg-red-500 transition-colors cursor-pointer">✕</button>-->
         </div>
     </div>
 <!--    <div class="absolute w-[100vw] -h-[50vh] bg-transparent"></div>-->
-    <div bind:this={appDOM} id="app" class="w-full min-w-[600px] min-h-[800px] grow flex bg-green-400 bg-opacity-20 hover:bg-opacity-25">
-        <div class="fixed left-5 top-36 w-full h-full md:hidden"></div>
+<!--    <div bind:this={appDOM} id="app" class="w-full min-w-[600px] min-h-[800px] bg-green-400 bg-opacity-20 hover:bg-opacity-25">-->
+    <div bind:this={appDOM} id="app-{$child.appId}" class="w-full h-full bg-green-400 bg-opacity-20 hover:bg-opacity-25">
+<!--        <div class="fixed left-5 top-36 w-full h-full md:hidden"></div>-->
     <!--{statModule.render()}-->
 <!--        <p class="text-2xl text-green-400">{statModule.name}</p>-->
 <!--        <div>-->

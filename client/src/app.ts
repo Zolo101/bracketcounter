@@ -1,14 +1,21 @@
 import { writable } from "svelte/store";
 import type { SocketMessageData } from "./socket";
-import type { DesktopTree } from "./statmodule";
+import type { DesktopTree, StatModule } from "./statmodule";
 import { barModule } from "./modules/bar";
 import { bracketcounter } from "$lib/pocketbase";
+import { graphModule } from "./modules/graph";
+import { pieModule } from "./modules/pie";
 
 export const latestMessage = writable<SocketMessageData>();
 // export const desktop = writable<DesktopTree>(writable({parent: true, depth: 0, direction: DesktopDirection.Vertical, children: [writable({parent: false, depth: 1, module: graphModule}), writable({parent: false, depth: 1, module: barModule})]}));
-export const desktop = writable<DesktopTree>(writable({parent: false, depth: 1, module: barModule}));
+export const desktop = writable<DesktopTree>(writable({parent: false, depth: 1, appId: "0", module: barModule}));
 // export const desktop = writable<DesktopTree>(writable({parent: false, depth: 0}));
 export const history = new Map<number, DesktopTree>()
+export const modules: Record<string, StatModule> = {
+    "Graph (WIP)": graphModule,
+    "Bar": barModule,
+    "Pie Chart (WIP)": pieModule
+}
 export let discordPostable: string;
 export let wikiaPostable: string;
 desktop.subscribe(dt => history.set(Date.now(), dt))

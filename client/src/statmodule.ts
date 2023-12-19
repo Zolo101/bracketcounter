@@ -15,12 +15,14 @@ export enum DesktopDirection {
 export type DesktopTreeChild = {
     parent: false
     depth: number
+    appId: string
     module?: StatModule
 }
 
 export type DesktopTreeParent = {
     parent: true
     depth: number
+    appId: string
     direction: DesktopDirection
     children: [DesktopTree?, DesktopTree?]
 }
