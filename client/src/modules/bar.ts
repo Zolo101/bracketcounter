@@ -239,7 +239,7 @@ class Bar {
         this.text.name.text = u.name
         this.text.name.setTransform(x + 5, y)
         // this.text.name.style.fontSize = width / 4;
-        this.text.name.width = clamp((width - 10) * 0.95, 50, 120)
+        this.text.name.width = clamp((width - 10) * 0.95, 50, 160)
         this.text.name.height = this.bar.height
 
         if (this.closeCall) {
