@@ -196,7 +196,7 @@ export const graphModule: StatModule = {
             line.onTick(stats)
         }
         lines[2].setActivity(false)
-        lines[0].setActivity(false)
+        // lines[0].setActivity(false)
 
         app.stage.addChild(leaderboard)
         // pixi.js rolls worst depth system, forced to leave vip room
