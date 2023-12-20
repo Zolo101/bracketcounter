@@ -5,6 +5,7 @@
     import { onMount } from "svelte";
     import { Application } from "pixi.js";
     import ModuleOptions from "./ModuleOptions.svelte";
+    import A11YOptions from "./A11YOptions.svelte";
 
     export let child: Writable<DesktopTreeChild>;
     let statModule = $child.module!;
@@ -13,19 +14,23 @@
     let beforeDate = $latestMessage.status.updateDate;
     $: newVotes = 0;
     $: newVotesPlural = newVotes === 1 ? "vote" : "votes"
-    $: dropdown = false;
+    $: editDropdown = false;
+    $: a11yDropdown = false;
 
     const exportData = () => {
-        dropdown = !dropdown;
+        editDropdown = !editDropdown;
     }
     const remove = () => {
         child.set({parent: false, depth: $child.depth})
     }
 
     const edit = () => {
-        dropdown = !dropdown;
+        editDropdown = !editDropdown;
     }
 
+    const a11yEdit = () => {
+        a11yDropdown = !a11yDropdown;
+    }
 
     onMount(async () => {
         const appDOM = document.querySelector(`#app-${$child.appId}`)! as HTMLDivElement
@@ -59,12 +64,16 @@
         <p>{statModule.name} {newVotes > 0 ? "(+ " + newVotes + " " + newVotesPlural + " since last refresh, " + $latestMessage.total.toLocaleString() + " total)" : ""}</p>
         <div class="flex max-md:hidden">
             <div class="absolute top-10">
-                {#if dropdown}
+                {#if editDropdown}
                     <ModuleOptions bind:child={child}/>
+                {/if}
+                {#if a11yDropdown}
+                    <A11YOptions/>
                 {/if}
             </div>
 <!--            <button on:click={exportData} class="h-full py-0 px-8 bg-gray-400/40 hover:bg-gray-400 transition-colors cursor-pointer">{"Export"}</button>-->
             <button class="h-full py-0 px-8 bg-yellow-500/40">NEW! Realtime Graph</button>
+            <button on:click={a11yEdit} class="h-full py-0 px-8 bg-red-500/40">Accessibility</button>
             <button on:click={edit} class="h-full py-0 px-8 bg-blue-500/40 hover:bg-blue-500 transition-colors cursor-pointer">{"<|>"}</button>
 <!--            <button on:click={remove} class="h-full py-0 px-8 bg-red-500/40 hover:bg-red-500 transition-colors cursor-pointer">✕</button>-->
         </div>

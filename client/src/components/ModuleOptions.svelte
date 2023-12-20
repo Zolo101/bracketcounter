@@ -48,7 +48,7 @@
 </script>
 
 <!-- Desktop dropdown -->
-<div transition:fly={{y: 100}} class="relative bg-green-400/30 flex flex-col gap-1 right-20 p-1 shadow-xl">
+<div transition:fly={{y: 100}} class="relative bg-green-400/50 flex flex-col gap-1 right-20 p-1 shadow-xl backdrop-blur-sm">
     {#each statModules as option}
         <button on:click={() => choose(option)} class="option">{option}</button>
     {/each}

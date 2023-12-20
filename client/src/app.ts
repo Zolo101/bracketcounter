@@ -11,6 +11,22 @@ export const latestMessage = writable<SocketMessageData>();
 export const desktop = writable<DesktopTree>(writable({parent: false, depth: 1, appId: "0", module: barModule}));
 // export const desktop = writable<DesktopTree>(writable({parent: false, depth: 0}));
 export const history = new Map<number, DesktopTree>()
+// TODO: Accessibility
+export const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+type Accessibility = {
+    reduced: boolean
+    highContrast: boolean
+}
+export let accessibility = {
+    reduced,
+    highContrast: false
+}
+export let accessibilityWritable  = writable<Accessibility>(accessibility)
+let accessibilityStore = localStorage.getItem("accessibility")
+if (accessibilityStore !== null) {
+    accessibility = JSON.parse(accessibilityStore)
+    accessibilityWritable.set(accessibility)
+}
 export const modules: Record<string, StatModule> = {
     "Bar": barModule,
     "Realtime Graph": graphModule,

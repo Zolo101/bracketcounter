@@ -10,11 +10,12 @@ import {
 } from "pixi.js";
 import type { StatModule } from "../statmodule";
 import { ordinal } from "../statmodule";
-import { history, latestMessage } from "../app";
+import { accessibility, history, latestMessage } from "../app";
 import type { Contestants, SocketMessageData } from "../socket";
 import anime from "animejs";
 import { getUseful } from "$lib/useful";
 import { stringHexToNum } from "$lib/misc";
+import { getDuration } from "$lib/a11y";
 
 const texture = Texture.from("dots_alpha.png")
 texture.baseTexture.setSize(32, 32)
@@ -162,7 +163,7 @@ class Bar {
                 targets: this.icon,
                 y: this.icon.y - 20,
                 alpha: 1,
-                duration: 200,
+                duration: getDuration(200),
                 easing: "easeInOutBack",
                 complete: () => this.icon.position.y = y + 12
                 // update: () => this.icon.position.y = wrap.y
@@ -175,7 +176,7 @@ class Bar {
             anime({
                 targets: this.icon,
                 y: this.icon.y + 20,
-                duration: 200,
+                duration: getDuration(200),
                 alpha: 0.5,
                 easing: "easeInOutBack",
                 complete: () => this.icon.position.y = y + 32
@@ -452,7 +453,7 @@ export const barModule: StatModule = {
             const appWidth = app.view.width;
             // const appHeight = app.view.height;
             // const appRatio = appWidth / appHeight
-            counter++;
+            if (!accessibility.reduced) counter++;
             app.resize()
 
             // let len = Object.entries(stats.votes).length + 5
