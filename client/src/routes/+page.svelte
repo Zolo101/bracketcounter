@@ -72,7 +72,7 @@
 <!--{:else}-->
     {#if acceptedTerms}
         <div class="flex flex-col h-full">
-            <div class="flex items-center justify-around text-white text-5xl min-h-[66px] max-h-[100px] grow px-5 z-10">
+            <div class="flex items-center justify-around text-white text-5xl max-md:text-3xl min-h-[66px] max-h-[100px] grow px-5 z-10">
                 <span class="title p-2">[bc]</span>
 <!--                <span class="text-orange-500 text-xl font-bold">These results are UNCONFIRMED and will differ from the official count!</span>-->
         <!--        <span class="text-4xl text-red-600" style="font-family: 'Comic Sans MS', 'Comic Neue', sans-serif;">unofficial unconfirmed!!1!</span>-->

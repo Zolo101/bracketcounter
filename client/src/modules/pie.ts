@@ -7,6 +7,9 @@ import { DropShadowFilter } from "@pixi/filter-drop-shadow";
 export const pieModule: StatModule = {
     name: "Pie Chart",
     async render(app, stats) {
+        Text.defaultResolution = 2;
+        Text.defaultAutoResolution = false;
+
         const background = new Graphics()
         background.beginFill(0x333333)
         background.drawRect(0, 0, 9999, 9999)

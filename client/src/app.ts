@@ -12,8 +12,8 @@ export const desktop = writable<DesktopTree>(writable({parent: false, depth: 1, 
 // export const desktop = writable<DesktopTree>(writable({parent: false, depth: 0}));
 export const history = new Map<number, DesktopTree>()
 export const modules: Record<string, StatModule> = {
-    "Realtime Graph": graphModule,
     "Bar": barModule,
+    "Realtime Graph": graphModule,
     "Pie Chart (WIP)": pieModule
 }
 export let discordPostable: string;
@@ -31,8 +31,8 @@ export enum Status {
 export const status = writable<Status>(Status.ServerOffline)
 const ID = "ve8tha1rbkqhjyk"
 export const statModules = [
-    "Realtime Graph",
     "Bar",
+    "Realtime Graph",
     "Pie Chart (WIP)",
     // "Boredom Repellant",
     // "BFDI Quiz",

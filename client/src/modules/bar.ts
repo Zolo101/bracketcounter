@@ -150,7 +150,6 @@ class Bar {
         this.icon.position.y = y + 32
 
         const colorMatrix = new ColorMatrixFilter()
-        console.log(colour.substring(1), stringHexToNum(colour))
         colorMatrix.desaturate()
         // colorMatrix.tint(stringHexToNum(colour))
 
@@ -199,9 +198,16 @@ class Bar {
         // then do stuff
 
         const displayVotes = this.closeCall ? Math.round(u.votes / 100) * 100 : u.votes
-        const ratioToFirst = displayVotes / u.sortedVotes[0][1]
+        // const ratioToFirst = displayVotes / u.sortedVotes[0][1]
         // const width = (appWidth * 0.6) * ratioToFirst
-        const width = (u.appWidth / 10) * (displayVotes / u.range)
+        const lowest = u.sortedVotes.at(-1)![1] / 2
+        const highest = u.sortedVotes.at(0)![1]
+        const diff = displayVotes - lowest
+        const range = highest - lowest
+
+        // const width = (u.appWidth / 10) * (displayVotes / u.range)
+        const max = u.appWidth * 0.6
+        const width = clamp((diff / range) * max, 60, u.appWidth - 250)
 
         const x = 100
         const y = 20 + (u.placement * (u.appHeight / u.len + 20))
@@ -233,7 +239,7 @@ class Bar {
         this.text.name.text = u.name
         this.text.name.setTransform(x + 5, y)
         // this.text.name.style.fontSize = width / 4;
-        this.text.name.width = clamp((width - 10) * 0.95, 80, 120)
+        this.text.name.width = clamp((width - 10) * 0.95, 50, 120)
         this.text.name.height = this.bar.height
 
         if (this.closeCall) {
@@ -455,7 +461,15 @@ export const barModule: StatModule = {
 
 
             // let widthOf1000 = sorted.at(0)![1] / (appWidth * 0.2)
-            let widthOf1000 = (appWidth / 10) * (1000 / range)
+
+            let highestBarIndex = sorted.findIndex(v => v[1] === sorted.at(0)![1])
+            let highestVote = sorted.at(0)![1]
+            let highestVoteWidth = bars[highestBarIndex].bar.width
+            let c = Math.floor(highestVote / 1000) + 1
+            // find the width of 1000 votes
+            // let widthOf1000 = Math.max(highestVoteWidth / (highestVote / 1000), 0.1)
+            let widthOf1000 = Math.max(highestVoteWidth / c, 5)
+            // console.log(c, widthOf1000)
 
             background.clear()
             background.beginFill({h: counter, s: 100, v: 10})
