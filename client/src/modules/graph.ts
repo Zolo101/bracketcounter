@@ -217,8 +217,15 @@ export const graphModule: StatModule = {
             fontSize: 17,
             fill: 0xffffff,
         })
+        const leaderboardTitle3 = new Text("(Lines going down is just a \nvisual bug that'll be fixed soon!)", {
+            fontFamily: "monospace",
+            fontSize: 17,
+            fill: 0xffffff,
+        })
         leaderboardTitle.setTransform(17, 14)
         leaderboardTitle2.setTransform(12, 184)
+        leaderboardTitle3.setTransform(140, 4)
+        leaderboardTitle3.alpha = 0.5
 
         const changeSpeed = (by: number) => {
             speed = clamp(speed + by, 1, 10)
@@ -297,6 +304,6 @@ export const graphModule: StatModule = {
             }
         })
 
-        app.stage.addChild(leaderboardTitle, leaderboardTitle2);
+        app.stage.addChild(leaderboardTitle, leaderboardTitle2, leaderboardTitle3);
     }
 }
