@@ -1,5 +1,5 @@
 import type { StatModule } from "../statmodule";
-import { Assets, Graphics, Sprite, Texture } from "pixi.js";
+import { Assets, Graphics, Sprite, Texture, Text } from "pixi.js";
 import { latestMessage } from "../app";
 import { getUseful } from "$lib/useful";
 import { DropShadowFilter } from "@pixi/filter-drop-shadow";
@@ -10,6 +10,12 @@ export const pieModule: StatModule = {
         const background = new Graphics()
         background.beginFill(0x333333)
         background.drawRect(0, 0, 9999, 9999)
+
+        const helpText = new Text("note: this is a work-in-progress\nand does not update!", {
+            fontSize: 20,
+            fill: "#ff8000"
+        })
+        helpText.setTransform(150, 10)
 
         const pie = await Assets.load<Texture>("Pie.webp")
         // pie.baseTexture.setSize(32, 32)
@@ -49,12 +55,13 @@ export const pieModule: StatModule = {
             startAngle = endAngle
         }
 
-        pieChart.position.set(500, 300)
+        pieChart.position.set(u.appWidth / 2, u.appHeight / 2)
         pieChart.filters = [new DropShadowFilter({ blur: 5 })]
-        app.stage.addChild(background, pieChart, pieS)
+        app.stage.addChild(background, pieChart, pieS, helpText)
 
         app.ticker.add(() => {
             app.resize()
+            pieChart.position.set(app.view.width / 2, app.view.height / 2)
         })
     }
 }

@@ -234,7 +234,7 @@ class Bar {
         this.text.name.setTransform(x + 5, y)
         // this.text.name.style.fontSize = width / 4;
         this.text.name.width = clamp((width - 10) * 0.95, 80, 120)
-        // this.text.name.height = (appHeight / len) * 0.7
+        this.text.name.height = this.bar.height
 
         if (this.closeCall) {
             this.text.leaderboardIndex.text = "--"
@@ -253,7 +253,7 @@ class Bar {
         }
 
         if (dangerZone > u.votes) {
-            this.text.leaderboardIndex.style.fill = "#ff6a00"
+            this.text.leaderboardIndex.style.fill = "#ff9090"
         }
 
         this.icon.position.x = x + width - 70

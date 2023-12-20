@@ -64,7 +64,7 @@
                 {/if}
             </div>
 <!--            <button on:click={exportData} class="h-full py-0 px-8 bg-gray-400/40 hover:bg-gray-400 transition-colors cursor-pointer">{"Export"}</button>-->
-<!--            <button class="h-full py-0 px-8 bg-yellow-500/40">{"NEW! Pie Chart"}</button>-->
+            <button class="h-full py-0 px-8 bg-yellow-500/40">NEW! Realtime Graph</button>
             <button on:click={edit} class="h-full py-0 px-8 bg-blue-500/40 hover:bg-blue-500 transition-colors cursor-pointer">{"<|>"}</button>
 <!--            <button on:click={remove} class="h-full py-0 px-8 bg-red-500/40 hover:bg-red-500 transition-colors cursor-pointer">✕</button>-->
         </div>
