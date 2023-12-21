@@ -1,7 +1,7 @@
 import {
     type Application,
     Assets,
-    ColorMatrixFilter,
+    ColorMatrixFilter, Container,
     Graphics,
     type ICanvas,
     Sprite,
@@ -44,9 +44,11 @@ const whatTeam = (key: string) => {
 class Bar {
     app: Application<ICanvas>
     index: number
+    placement: number
     closeCall: boolean
     positionHistory: number[] // every 1 tick, for 10 ticks
-    bar: Graphics
+    bar: Container
+    barGraphic: Graphics
     mask: Graphics
     icon: Sprite
     text: {
@@ -59,10 +61,12 @@ class Bar {
 
     constructor(index: number, app: Application<ICanvas>) {
         this.index = index
+        this.placement = 0
         this.app = app
         this.closeCall = false
         this.positionHistory = []
-        this.bar = new Graphics()
+        this.bar = new Container()
+        this.barGraphic = new Graphics()
         this.mask = new Graphics()
         this.icon = new Sprite()
         this.text = {
@@ -90,9 +94,9 @@ class Bar {
                 fontSize: 34,
                 fontWeight: "bold",
                 fillGradientStops: [0.1, 0.8],
-                // dropShadow: true,
-                // dropShadowAlpha: 0.2,
-                // dropShadowDistance: 6
+                dropShadow: true,
+                dropShadowAlpha: 0.2,
+                dropShadowDistance: 6
             }),
             votesInfo: new Text("", {
                 fill: 0xffffff,
@@ -129,7 +133,10 @@ class Bar {
         this.text.name.alpha = 0.5
         this.text.votesInfo.alpha = 0.5
 
-        app.stage.addChild(this.bar, this.icon, this.text.name, this.text.votes, this.text.votesInfo, this.text.leaderboardIndex, this.text.leaderboardIndexVoteLetter)
+        this.bar.position.x = 5
+        this.bar.sortableChildren = true
+        this.bar.addChild(this.barGraphic, this.mask, this.icon, this.text.name, this.text.votes, this.text.votesInfo, this.text.leaderboardIndex, this.text.leaderboardIndexVoteLetter)
+        app.stage.addChild(this.bar)
     }
 
     async setTexture(stats: SocketMessageData) {
@@ -137,18 +144,15 @@ class Bar {
         const [key, votes]: [string, number] = contestantVotes[this.index]
         const contestants = stats.config.contestants
         const [name, colour] = contestants[key]
-        const u = getUseful(this.app, stats, this.index)
-        const y = 20 + (u.placement * (u.appHeight / u.len + 20))
-
-        // mask
+        // const u = getUseful(this.app, stats, this.index)
+        // const y = 20 + (u.placement * (u.appHeight / u.len + 20))
 
         this.icon.texture = await Assets.load(`characters/${name}.webp`)
         // this.icon.roundPixels = false
-        this.icon.mask = this.mask
         this.icon.height = 64
         this.icon.width = this.icon.texture.width * (this.icon.height / this.icon.texture.height)
         this.icon.alpha = 0.5
-        this.icon.position.y = y + 32
+        this.icon.position.y = 32
 
         const colorMatrix = new ColorMatrixFilter()
         colorMatrix.desaturate()
@@ -156,8 +160,8 @@ class Bar {
 
         // this.icon.filters = [colorMatrix]
 
-        this.bar.eventMode = "dynamic"
-        this.bar.on("mouseover", () => {
+        this.barGraphic.eventMode = "dynamic"
+        this.barGraphic.on("mouseover", () => {
             // animate icon bouncing up
             anime({
                 targets: this.icon,
@@ -165,13 +169,13 @@ class Bar {
                 alpha: 1,
                 duration: getDuration(200),
                 easing: "easeInOutBack",
-                complete: () => this.icon.position.y = y + 12
+                complete: () => this.icon.position.y = 12
                 // update: () => this.icon.position.y = wrap.y
             })
             // this.icon.alpha = 1
             // this.icon.filters = []
         })
-        this.bar.on("mouseout", () => {
+        this.barGraphic.on("mouseout", () => {
             // animate icon bouncing down
             anime({
                 targets: this.icon,
@@ -179,7 +183,7 @@ class Bar {
                 duration: getDuration(200),
                 alpha: 0.5,
                 easing: "easeInOutBack",
-                complete: () => this.icon.position.y = y + 32
+                complete: () => this.icon.position.y = 32
                 // update: () => this.icon.position.y = wrap.y
             })
             this.icon.alpha = 0.5
@@ -188,7 +192,7 @@ class Bar {
     }
 
     moveIcon(y: number) {
-        this.icon.position.y = y + 32
+        this.icon.position.y = y
     }
 
     update(stats: SocketMessageData, lastTimesVotes: Record<string, number[]>) {
@@ -209,64 +213,96 @@ class Bar {
         // const width = (u.appWidth / 10) * (displayVotes / u.range)
         const max = u.appWidth * 0.6
         const width = clamp((diff / range) * max, 60, u.appWidth - 250)
+        const height = u.appHeight / u.len
 
         const x = 100
-        const y = 20 + (u.placement * (u.appHeight / u.len + 20))
+        const y = 20 + (u.placement * (height + 20))
+
+        this.mask.beginFill("#000000", 0.7)
+        this.mask.drawRect(100, 0, width, height)
+        this.mask.endFill()
+        this.mask.zIndex = 10;
+
+        this.icon.mask = this.mask
 
         // TODO: Put in another function?
         const backgroundColour = "#FDC900"
 
-        this.bar.clear()
-        this.bar.beginFill(backgroundColour)
-        this.bar.drawRect(5, y, 3, u.appHeight / u.len)
+        this.barGraphic.clear()
+        this.barGraphic.beginFill(backgroundColour)
+        this.barGraphic.drawRect(5, 0, 3, height)
 
-        this.bar.beginFill(u.colour)
-        this.bar.drawRect(x, y, width, u.appHeight / u.len)
-        this.bar.beginTextureFill({
+        this.barGraphic.beginFill(u.colour)
+        this.barGraphic.drawRect(x, 0, width, height)
+        this.barGraphic.beginTextureFill({
             color: u.colour,
             texture
         })
 
         if (this.closeCall) {
-            this.bar.beginFill(u.colour, 0.2)
-            this.bar.drawRect(x, y, width + 10, u.appHeight / u.len)
+            this.barGraphic.beginFill(u.colour, 0.2)
+            this.barGraphic.drawRect(x, 0, width + 10, height)
         }
 
         // TODO: Changes "votes" so that it doesnt eventually clip out of the window
-        this.bar.drawRect(x, y, width, u.appHeight / u.len)
-        this.bar.endFill()
-        this.mask = this.bar.clone()
+        this.barGraphic.drawRect(x, 0, width, height)
+        this.barGraphic.endFill()
+        // this.mask = this.barGraphic.clone()
+
+        // the mask fucks up when swapping places
+        // this.mask.beginFill("#000000", 0.7)
+        // this.mask.drawRect(0, 0, this.mask.width, this.mask.height)
+        // this.mask.endFill()
+        console.log(y, this.mask.getBounds())
+
 
         this.text.name.text = u.name
-        this.text.name.setTransform(x + 5, y)
+        this.text.name.setTransform(x + 5, 0)
         // this.text.name.style.fontSize = width / 4;
         this.text.name.width = clamp((width - 10) * 0.95, 50, 160)
-        this.text.name.height = this.bar.height
+        this.text.name.height = this.barGraphic.height
 
         if (this.closeCall) {
             this.text.leaderboardIndex.text = "--"
             this.text.votes.text = "~" + displayVotes
-            this.text.votes.setTransform(x + 10 + width + 10, y + 2)
+            this.text.votes.setTransform(x + 10 + width + 10, 2)
         } else {
             this.text.leaderboardIndex.text = ordinal(u.placement + 1)
             this.text.leaderboardIndexVoteLetter.text = `[${u.key.toUpperCase()}]`
             this.text.leaderboardIndexVoteLetter.style.fill = u.colour
-            this.text.votes.setTransform(x + 10 + width, y - 4)
+            this.text.votes.setTransform(x + 10 + width, -4)
             this.text.votes.text = displayVotes
             this.text.votes.style.fill = ["#ffffff", u.colour]
             // voteLineBarVoteCountTextInfo[i].text = `Avg gain: + ${getAverageGainPerMinute(lastTimesVotes[key])}, Since Last Refresh: + ${lastTimesVotes[key].at(-1)}`
             this.text.votesInfo.text = `+${getLatestGain(lastTimesVotes[u.key])}, ~${getAverageGainPerMinute(lastTimesVotes[u.key]).toPrecision(2)} per minute`
-            this.text.votesInfo.setTransform(x + 10 + width, y + 32)
+            this.text.votesInfo.setTransform(x + 10 + width, 32)
         }
 
         if (dangerZone > u.votes) {
             this.text.leaderboardIndex.style.fill = "#ff9090"
         }
 
-        this.icon.position.x = x + width - 70
-        this.text.leaderboardIndex.setTransform(x - 80, y + 8)
-        this.text.leaderboardIndexVoteLetter.setTransform(x - 66, y + 40)
+        this.icon.position.x = x + width - 100
+        this.text.leaderboardIndex.setTransform(x - 80, 8)
+        this.text.leaderboardIndexVoteLetter.setTransform(x - 66, 40)
         this.text.name.style.wordWrapWidth = (width - 10)
+
+
+        // this.bar.setTransform(5, y)
+        if (u.placement != this.placement && !accessibility.reduced) {
+            anime({
+                targets: this.bar,
+                y: y,
+                duration: getDuration(2000),
+                easing: "easeOutCubic",
+                complete: () => {
+                    this.bar.y = y
+                }
+            })
+        } else {
+            this.bar.y = y
+        }
+        this.placement = u.placement
     }
 
     onTick(stats: SocketMessageData) {
@@ -279,7 +315,7 @@ class Bar {
         const changedPosition = this.positionHistory[0] !== this.positionHistory.at(-1)
         if (changedPosition) {
             const y = 20 + (u.placement * (u.appHeight / u.len + 20))
-            this.moveIcon(y)
+            // this.moveIcon(y)
         }
     }
 
@@ -449,6 +485,7 @@ export const barModule: StatModule = {
         texture.baseTexture.setSize(32, 32)
 
         let counter = 0;
+        let vT = 0
         app.ticker.add(() => {
             const appWidth = app.view.width;
             // const appHeight = app.view.height;
@@ -465,7 +502,7 @@ export const barModule: StatModule = {
 
             let highestBarIndex = sorted.findIndex(v => v[1] === sorted.at(0)![1])
             let highestVote = sorted.at(0)![1]
-            let highestVoteWidth = bars[highestBarIndex].bar.width
+            let highestVoteWidth = bars[highestBarIndex].barGraphic.width
             let c = Math.floor(highestVote / 1000) + 1
             // find the width of 1000 votes
             // let widthOf1000 = Math.max(highestVoteWidth / (highestVote / 1000), 0.1)
@@ -498,16 +535,19 @@ export const barModule: StatModule = {
             // console.log(lastTimesVotes)
             // console.log(lastTimesVotes["a"])
 
-            let i = 0;
-            for (const bar of bars) {
-                if (!setTextures) {
-                    bar.setTexture(stats)
+            if (stats.total > vT) {
+                for (const bar of bars) {
+                    if (!setTextures) {
+                        bar.setTexture(stats)
+                    }
+                    bar.update(stats, lastTimesVotes)
                 }
-                bar.update(stats, lastTimesVotes)
+                vT = stats.total
             }
             setTextures = true
 
 
+            let i = 0;
             for (const [key, votes] of sorted) {
                 // const name = contestants[key][0]
                 // const colour = contestants[key][1]
