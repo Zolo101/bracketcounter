@@ -29,6 +29,7 @@
 		"@pixi/filter-drop-shadow": "^5.2.0",
 		"animejs": "^3.2.2",
 		"json5": "^2.2.3",
+		"pixi-viewport": "^5.0.2",
 		"pixi.js": "^7.3.2",
 		"pocketbase": "^0.20.1"
 	}

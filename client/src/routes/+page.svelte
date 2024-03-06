@@ -65,11 +65,11 @@
     </script>
 </svelte:head>
 
-<!--{#if deadline !== -1}-->
-<!--    <div class="flex w-full h-full bg-black">-->
-<!--        <img class="m-auto" src="bc_wait.png" height="512" width="512"/>-->
-<!--    </div>-->
-<!--{:else}-->
+{#if deadline !== -1}
+    <div class="flex w-full h-full bg-black">
+        <img class="m-auto" src="bc_will.png" height="512" width="512" alt="waiting for tpot 10"/>
+    </div>
+{:else}
     {#if acceptedTerms}
         <div class="flex flex-col h-full">
             <div class="flex items-center justify-around text-white text-5xl max-md:text-3xl min-h-[66px] max-h-[100px] grow px-5 z-10">
@@ -146,7 +146,7 @@
             </div>
         </div>
     {/if}
-<!--{/if}-->
+{/if}
 
 <style>
     h3 {
