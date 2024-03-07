@@ -63,6 +63,8 @@
 
         gtag('config', 'G-9NR4C4M5T0');
     </script>
+<!--    TODO: Remove google analytics after tpot 10 counting -->
+    <script defer src="https://analytics.zelo.dev/script.js" data-website-id="634d53b7-0a46-4caf-82a8-95db35ba1f6d"></script>
 </svelte:head>
 
 {#if deadline !== -1}
