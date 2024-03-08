@@ -46,39 +46,39 @@
 </script>
 
 <!-- Choose a Module... -->
-<div on:click|self={() => dropdown = !dropdown} class="flex flex-col items-center justify-center w-full border border-amber-300 rounded bg-amber-300 bg-opacity-20 hover:bg-opacity-30 transition-colors cursor-pointer">
-    <p class="text-2xl">Choose a Module...</p>
+<button on:click|self={() => dropdown = !dropdown} class="flex flex-col rounded items-center h-[48px] justify-center px-12 py-16 text-green-400 outline outline-green-300/50 bg-green-300/20 hover:bg-green-300/30 transition-colors cursor-pointer">
+    <span class="text-7xl">+</span>
     {#if dropdown}
         <div
             in:fly={{y: 100}}
             out:fly|local={{duration: 300}}
-            class="z-10 flex flex-col p-3 gap-3 text-3xl shadow border-double border-4 border-gray-700 bg-gray-700/50">
+            class="z-10 flex flex-col p-3 gap-3 text-3xl rounded shadow outline outline-white/50 bg-gray-700/40 backdrop-blur-xl backdrop-brightness-75">
 
             {#each statModules as option}
-                <li on:click={() => choose(option)} class="option">{option}</li>
+                <button on:click={() => choose(option)} class="option">{option}</button>
             {/each}
 
             {#if $child.depth < 3}
                 <br>
 <!--                <li on:click={() => split(DesktopDirection.Horizontal)} class="!text-blue-400 option">Split Horizontally</li>-->
-                <li on:click={() => split(DesktopDirection.Horizontal)} class="!text-blue-300 option">Split Horizontally</li>
-                <li on:click={() => split(DesktopDirection.Vertical)} class="!text-blue-300 option">Split Vertically</li>
-<!--                <li on:click={remove} class="!text-red-400 option">Delete</li>-->
+                <button on:click={() => split(DesktopDirection.Horizontal)} class="!text-blue-300 option">Split Horizontally</button>
+                <button on:click={() => split(DesktopDirection.Vertical)} class="!text-blue-300 option">Split Vertically</button>
+                <button on:click={remove} class="!text-red-400 option">Delete</button>
             {/if}
         </div>
     {/if}
-</div>
+</button>
+
+<dialog>
+    <p>e</p>
+</dialog>
 
 <style>
     .option {
-        @apply text-yellow-300 p-2 bg-white bg-opacity-0 transition-colors;
+        @apply bg-white/15 rounded text-xl text-yellow-300 px-10 py-4 bg-opacity-0 transition-colors;
     }
 
     .option:hover {
-        @apply bg-opacity-10;
-    }
-
-    li {
-        @apply font-bold;
+        @apply bg-white/10;
     }
 </style>

@@ -4,6 +4,8 @@
     import { desktop, init, latestMessage } from "../app";
     import Desktop from "../components/Desktop.svelte";
     import Live from "../components/Live.svelte";
+
+    import headerBackground from "$lib/assets/march06bc.png";
     let countdownText = "";
     let countdown: number;
     let deadline = 99999999999
@@ -67,23 +69,34 @@
     <script defer src="https://analytics.zelo.dev/script.js" data-website-id="634d53b7-0a46-4caf-82a8-95db35ba1f6d"></script>
 </svelte:head>
 
-{#if deadline !== -1}
-    <div class="flex w-full h-full bg-black">
-        <img class="m-auto" src="bc_will.png" height="512" width="512" alt="waiting for tpot 10"/>
-    </div>
-{:else}
+<!--{#if deadline !== -1}-->
+<!--    <div class="flex w-full h-full bg-black">-->
+<!--        <img class="m-auto" src="bc_will.png" height="512" width="512" alt="waiting for tpot 10"/>-->
+<!--    </div>-->
+<!--{:else}-->
     {#if acceptedTerms}
-        <div class="flex flex-col h-full">
-            <div class="flex items-center justify-around text-white text-5xl max-md:text-3xl min-h-[66px] max-h-[100px] grow px-5 z-10">
-                <span class="title p-2">[bc]</span>
-                <span class="text-orange-500 text-xl font-bold">These results are UNCONFIRMED and will differ from the official count!</span>
-        <!--        <span class="text-4xl text-red-600" style="font-family: 'Comic Sans MS', 'Comic Neue', sans-serif;">unofficial unconfirmed!!1!</span>-->
+        <img class="w-full absolute -top-[50px]" src={headerBackground} alt=""/>
+        <main class="flex flex-col bg-black text-white h-full">
+<!--            <header class="flex items-center justify-around text-white text-5xl max-md:text-3xl min-h-[66px] max-h-[100px] grow px-5 z-10">-->
+            <header class="flex items-center justify-between text-neutral-50 min-h-[66px] max-h-[100px] grow px-5 z-10">
+<!--                <span class="title p-2">[bc]</span>-->
+                <span class="text-white/50 drop-shadow-lg text-5xl max-md:text-3xl p-2">[bc]</span>
+                <section class="flex justify-around grow">
+
+<!--                <span class="text-orange-500 text-xl font-bold">These results are UNCONFIRMED and will differ from the official count!</span>-->
+<!--                <span class="text-4xl text-red-600" style="font-family: 'Comic Sans MS', 'Comic Neue', sans-serif;">unofficial unconfirmed!!1!</span>-->
         <!--        <span class="text-xl text-orange-400">WIP mod of figgyc bracketcounter</span>-->
         <!--        <a href="https://github.com/zolo101/bracketcounter" class="text-xl !text-yellow-400 hover:underline">(Github Repo)</a>-->
-<!--                <span class="bg-white/10 p-2 rounded-xl" class:end={!countdown}>{countdownText}</span>-->
-        <!--        <span class="text-xl text-green-400">For now, close contestants are rounded to discourage alt voting</span>-->
+                    <span class="bg-white/10 text-4xl max-md:text-3xl p-2 rounded-xl" class:end={!countdown}>{countdownText}</span>
+<!--                <span class="text-xl text-green-400">For now, close contestants are rounded to discourage alt voting</span>-->
 <!--                <Live/>-->
-            </div>
+<!--                    <section class="flex justify-center text-xl gap-2">-->
+<!--                        <button>Accessibility</button>-->
+<!--                        <button>Update notices</button>-->
+<!--                        <button>FAQ</button>-->
+<!--                    </section>-->
+                </section>
+            </header>
         <!--<div id="status" class="text-white"></div>-->
         <!--<div id="graph" class="w-full h-3/5 v2s"></div>-->
         <!--<div id="bars"></div>-->
@@ -98,11 +111,12 @@
         <!--    </a>-->
         <!--</div>-->
             {#if $latestMessage}
-                <div class="bg-neutral-600 grow relative">
+<!--                <img class="absolute top-[10px]" src={mainBackground} alt=""/>-->
+                <div class="grow relative">
                     <Desktop tree={$desktop}/>
                 </div>
             {/if}
-        </div>
+        </main>
     {:else}
         <!-- TODO: Make terms and conditions mobile friendly-->
         <div class="flex justify-center">
@@ -148,7 +162,7 @@
             </div>
         </div>
     {/if}
-{/if}
+<!--{/if}-->
 
 <style>
     h3 {

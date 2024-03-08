@@ -22,9 +22,11 @@
 
 <!--<div class="flex h-full w-full border border-amber-300">-->
 
-<div class="flex h-full w-full">
+<div class="flex w-full h-full">
     {#if !$tree}
-        <EmptyChild/>
+        <div class="items-center">
+            <EmptyChild/>
+        </div>
     {:else}
         {#if $tree.parent}
             {@const direction = $tree.direction ? "flex-direction: column;" : "flex-direction: row;"}

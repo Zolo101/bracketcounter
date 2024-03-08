@@ -49,7 +49,7 @@ const ID = "ve8tha1rbkqhjyk"
 export const statModules = [
     "Bar",
     "Realtime Graph",
-    "Pie Chart (WIP)",
+    // "Pie Chart (WIP)",
     // "Boredom Repellant",
     // "BFDI Quiz",
     // "BFDIA 5b"

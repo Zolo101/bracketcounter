@@ -48,7 +48,7 @@
 </script>
 
 <!-- Desktop dropdown -->
-<div transition:fly={{y: 100}} class="relative bg-green-400/50 flex flex-col gap-1 right-20 p-1 shadow-xl backdrop-blur-sm">
+<div transition:fly={{y: 100}} class="relative rounded backdrop-blur-md bg-green-400/50 flex flex-col gap-2 right-20 p-2 outline outline-2 outline-green-300 shadow-xl">
     {#each statModules as option}
         <button on:click={() => choose(option)} class="option">{option}</button>
     {/each}
@@ -63,10 +63,10 @@
 
 <style>
     button {
-        @apply bg-black/40 px-10 py-5 transition-colors;
+        @apply bg-black/40 rounded px-10 py-5 transition-colors;
     }
 
     button:hover {
-        @apply bg-white/20;
+        @apply bg-black/60;
     }
 </style>

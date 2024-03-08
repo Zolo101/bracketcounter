@@ -9,10 +9,11 @@
 
 html {
     @apply h-full;
+    font-family: Roboto, sans-serif;
 }
 
 body {
-    @apply h-full w-full overflow-x-hidden text-white m-0 p-0 bg-gray-700;
+    @apply h-full w-full overflow-x-hidden m-0 p-0;
     font-family: Inter, sans-serif;
 }
 
@@ -32,11 +33,6 @@ body {
     }
 }
 
-html {
-    @apply text-sm;
-    font-family: Roboto, sans-serif;
-}
-
 textarea {
     @apply bg-green-950 text-white border-0;
 }
@@ -44,6 +40,10 @@ textarea {
 
 a {
     @apply text-gray-100;
+}
+
+canvas {
+    @apply rounded-b-xl;
 }
 
 /*a:visited {*/
