@@ -1,7 +1,9 @@
 import {
     type Application,
     Assets,
-    ColorMatrixFilter, Container,
+    BlurFilter,
+    ColorMatrixFilter,
+    Container,
     Graphics,
     type ICanvas,
     Sprite,
@@ -16,6 +18,7 @@ import anime from "animejs";
 import { getUseful } from "$lib/useful";
 import { stringHexToNum } from "$lib/misc";
 import { getDuration } from "$lib/a11y";
+import { DropShadowFilter } from "@pixi/filter-drop-shadow";
 
 const texture = Texture.from("dots_alpha.png")
 texture.baseTexture.setSize(32, 32)
@@ -96,13 +99,13 @@ class Bar {
                 fillGradientStops: [0.1, 0.8],
                 dropShadow: true,
                 dropShadowAlpha: 0.2,
-                dropShadowDistance: 6
+                dropShadowDistance: 4
             }),
             votesInfo: new Text("", {
                 fill: 0xffffff,
                 // fill: contestants[votes[i][0]][1],
                 // fontFamily: "monospace",
-                fontSize: 16,
+                fontSize: 18,
                 fontWeight: "bold",
                 // dropShadow: true,
                 // dropShadowAlpha: 0.2,
@@ -113,9 +116,9 @@ class Bar {
                 fontFamily: "monospace",
                 fontSize: 34,
                 fontWeight: "bold",
-                // dropShadow: true,
-                // dropShadowAlpha: 0.2,
-                // dropShadowDistance: 6
+                dropShadow: true,
+                dropShadowAlpha: 0.2,
+                dropShadowDistance: 3
                 // fill: contestants[votes[i][0]][1],
             }),
             leaderboardIndexVoteLetter: new Text("", {
@@ -123,12 +126,13 @@ class Bar {
                 fontFamily: "monospace",
                 fontSize: 18,
                 fontWeight: "bold",
-                // dropShadow: true,
-                // dropShadowAlpha: 0.2,
-                // dropShadowDistance: 6
+                dropShadow: true,
+                dropShadowAlpha: 0.2,
+                dropShadowDistance: 2
                 // fill: contestants[votes[i][0]][1],
             })
         }
+        this.barGraphic.filters = [new DropShadowFilter({blur: 2})]
 
         this.text.name.alpha = 0.5
         this.text.votesInfo.alpha = 0.5
@@ -149,13 +153,13 @@ class Bar {
 
         this.icon.texture = await Assets.load(`characters/${name}.webp`)
         // this.icon.roundPixels = false
-        this.icon.height = 64
+        this.icon.height = 128
         this.icon.width = this.icon.texture.width * (this.icon.height / this.icon.texture.height)
         this.icon.alpha = 0.5
         this.icon.position.y = 32
 
-        const colorMatrix = new ColorMatrixFilter()
-        colorMatrix.desaturate()
+        // const colorMatrix = new ColorMatrixFilter()
+        // colorMatrix.desaturate()
         // colorMatrix.tint(stringHexToNum(colour))
 
         // this.icon.filters = [colorMatrix]
@@ -349,15 +353,8 @@ export const barModule: StatModule = {
         //     .map((s) => s.setTransform(0, 0, 0.01, 0.01))
         // t.baseTexture.setSize(32, 32)
 
-
-
         // const s = new Sprite(t)
         // s.setTransform(0, 0, 0.04, 0.04)
-
-
-
-
-
 
         const lastTimesVotes: Record<string, number[]> = {} // 10 tick history of last vote count rise amounts
         lastTimesVotes["a"] = [] // :(
@@ -388,8 +385,18 @@ export const barModule: StatModule = {
         const votes = Object.entries(stats.votes)
         const contestants = stats.config.contestants
         const background = new Graphics()
+
+        const blurFilter = new BlurFilter(50, 20);
+
+        const background2texture = Texture.from("march06bc_2.png")
+        const background2 = new Sprite(background2texture);
+        background2.filters = [blurFilter]
+        background2.y = -600;
+        background2.height = app.view.height * 2
+
         const bar = new Graphics()
         let setTextures = false;
+        background.alpha = 0.3;
         background.beginFill(0x000000)
         background.drawRect(0, 0, 9999, 9999)
         background.endFill()
@@ -473,7 +480,7 @@ export const barModule: StatModule = {
 
         // const text = new Text("Hello, World!")
         // app.stage.addChild(background, ...snowSprites, bar, ...voteLineNumberText, ...voteLineLeaderboardIndexText, ...voteLineLeaderboardIndexVoteLetterText, ...voteLineBarVoteCountText, ...voteLineBarVoteCountTextInfo);
-        app.stage.addChild(background, bar);
+        app.stage.addChild(background2, background, bar);
 
         // hardcode for now
         for (let i = 0; i < 5; i++) {
@@ -510,12 +517,13 @@ export const barModule: StatModule = {
             // console.log(c, widthOf1000)
 
             background.clear()
-            background.beginFill({h: counter, s: 100, v: 10})
+            // background.beginFill({h: counter, s: 100, v: 10})
+            background.beginFill({h: 0, s: 100, v: 0})
             background.drawRect(0, 0, 9999, 9999)
             background.beginFill(0xffffff, 0.1)
             let j = 100;
             while (j < appWidth) {
-                background.drawRect(j, 0, 4, 9999)
+                background.drawRect(j, 0, 2, 9999)
                 j += widthOf1000;
             }
             background.endFill()
