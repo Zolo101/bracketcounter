@@ -86,7 +86,7 @@
                 <span class="text-white/50 drop-shadow-lg text-5xl max-md:text-3xl md:p-2 max-md:hidden">[bc]</span>
                 <div class="flex flex-col gap-0">
                     <span class="text-white drop-shadow-lg text-xl max-md:text-xs">help wanted: tpot related backgrounds for the bar graph.</span>
-                    <span class="text-white drop-shadow-lg text-xl max-md:text-xs">dm @zelo101 on discord! you will be credited on site.</span>
+                    <span class="text-white drop-shadow-lg text-xl max-md:text-xs">dm @zelo101 on discord! you will be credited on the site.</span>
                 </div>
                 <section class="flex justify-around grow">
 
