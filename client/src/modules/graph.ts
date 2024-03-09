@@ -174,6 +174,8 @@ class Line {
         // this.lineText.position.set(u.appWidth / 1.5, (y / 2) - 10)
         this.lineText.text = (-this.countHistory.at(0)!).toString()
         this.lineText.scale.set(1 / Math.min(3, this.viewport.scaled))
+
+        this.viewport.moveCenter(u.appWidth / 1.5, this.countHistory.at(0)!);
     }
 }
 

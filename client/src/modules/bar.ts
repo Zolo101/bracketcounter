@@ -397,10 +397,25 @@ export const barModule: StatModule = {
 
         const bar = new Graphics()
         let setTextures = false;
-        background.alpha = 0.3;
+        background.alpha = 0.8;
         background.beginFill(0x000000)
         background.drawRect(0, 0, 9999, 9999)
         background.endFill()
+
+        const credit = new Text(`"Intermission" by @zelo101`, {
+            fontSize: 24,
+            fontWeight: "bold",
+            fill: "#ffffff"
+        });
+
+        credit.anchor.set(1, 0)
+        credit.setTransform(app.view.width - 10, app.view.height)
+
+        const creditBackground = new Graphics()
+        const padding = 10
+        creditBackground.beginFill(0x000000, 0.5)
+        creditBackground.drawRect(credit.x - (padding / 2) - credit.width, credit.y - (padding / 2), credit.width + padding, credit.height + padding)
+        creditBackground.endFill()
 
 
         // const voteLineNumberText = new Array(votes.length)
@@ -481,7 +496,7 @@ export const barModule: StatModule = {
 
         // const text = new Text("Hello, World!")
         // app.stage.addChild(background, ...snowSprites, bar, ...voteLineNumberText, ...voteLineLeaderboardIndexText, ...voteLineLeaderboardIndexVoteLetterText, ...voteLineBarVoteCountText, ...voteLineBarVoteCountTextInfo);
-        app.stage.addChild(background2, background, bar);
+        app.stage.addChild(background2, background, bar, creditBackground, credit);
 
         // hardcode for now
         for (let i = 0; i < 5; i++) {
@@ -494,7 +509,7 @@ export const barModule: StatModule = {
 
         let counter = 0;
         let vT = 0
-        app.ticker.add(() => {
+        function ticker() {
             const appWidth = app.view.width;
             // const appHeight = app.view.height;
             // const appRatio = appWidth / appHeight
@@ -519,9 +534,9 @@ export const barModule: StatModule = {
 
             background.clear()
             // background.beginFill({h: counter, s: 100, v: 10})
-            background.beginFill({h: 0, s: 100, v: 0})
-            background.drawRect(0, 0, 9999, 9999)
-            background.beginFill(0xffffff, 0.1)
+            // background.beginFill({h: 0, s: 100, v: 0})
+            // background.drawRect(0, 0, 9999, 9999)
+            background.beginFill(0xffffff, 0.2)
             let j = 100;
             while (j < appWidth) {
                 background.drawRect(j, 0, 2, 9999)
@@ -633,7 +648,13 @@ export const barModule: StatModule = {
                 i++;
             }
             // bar.lineStyle()
-        })
+        }
+
+        app.ticker.add(ticker)
+
+        // pixijs rolls worst way of removing a ticker, forced to leave vip room
+        // @ts-ignore
+        app.tickerFunction = ticker;
     }
 }
 

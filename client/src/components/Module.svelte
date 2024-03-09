@@ -51,6 +51,13 @@
 
         child.subscribe(c => {
             if (c.module) {
+                // Clear the stage
+                app.stage.removeChildren()
+
+                // @ts-ignore
+                app.ticker.remove(app.tickerFunction)
+
+                // Switch to new module
                 statModule = c.module!
                 statModule.render(app, $latestMessage)
             }
