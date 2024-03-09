@@ -393,6 +393,7 @@ export const barModule: StatModule = {
         background2.filters = [blurFilter]
         background2.y = -600;
         background2.height = app.view.height * 2
+        background2.alpha = accessibility.noBackground ? 0 : 0.75;
 
         const bar = new Graphics()
         let setTextures = false;

@@ -8,20 +8,19 @@ import { pieModule } from "./modules/pie";
 
 export const latestMessage = writable<SocketMessageData>();
 // export const desktop = writable<DesktopTree>(writable({parent: true, depth: 0, direction: DesktopDirection.Vertical, children: [writable({parent: false, depth: 1, module: graphModule}), writable({parent: false, depth: 1, module: barModule})]}));
+// export const desktop = writable<DesktopTree>(writable({parent: false, depth: 1, appId: "0", module: barModule}));
 export const desktop = writable<DesktopTree>(writable({parent: false, depth: 1, appId: "0", module: barModule}));
 // export const desktop = writable<DesktopTree>(writable({parent: false, depth: 0}));
 export const history = new Map<number, DesktopTree>()
-// TODO: Accessibility
 export const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-type Accessibility = {
-    reduced: boolean
-    highContrast: boolean
-}
+export const contrast = window.matchMedia("(prefers-contrast: more)").matches;
 export let accessibility = {
     reduced,
-    highContrast: false
-}
-export let accessibilityWritable  = writable<Accessibility>(accessibility)
+    noBackground: false,
+    highContrast: contrast,
+    noTimer: false,
+} as const;
+export let accessibilityWritable  = writable<typeof accessibility>(accessibility)
 let accessibilityStore = localStorage.getItem("accessibility")
 if (accessibilityStore !== null) {
     accessibility = JSON.parse(accessibilityStore)
@@ -48,7 +47,7 @@ export const status = writable<Status>(Status.ServerOffline)
 const ID = "ve8tha1rbkqhjyk"
 export const statModules = [
     "Bar",
-    "Realtime Graph",
+    // "Realtime Graph",
     // "Pie Chart (WIP)",
     // "Boredom Repellant",
     // "BFDI Quiz",

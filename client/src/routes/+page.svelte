@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import { fly } from "svelte/transition";
-    import { desktop, init, latestMessage } from "../app";
+    import { accessibility, desktop, init, latestMessage } from "../app";
     import Desktop from "../components/Desktop.svelte";
     import Live from "../components/Live.svelte";
 
@@ -75,19 +75,28 @@
 <!--    </div>-->
 <!--{:else}-->
     {#if acceptedTerms}
-        <img class="w-full absolute -top-[50px]" src={headerBackground} alt=""/>
+        {#if !accessibility.noBackground}
+            <img class="w-full absolute -top-[50px]" src={headerBackground} alt=""/>
+        {/if}
         <main class="flex flex-col bg-black text-white h-full">
 <!--            <header class="flex items-center justify-around text-white text-5xl max-md:text-3xl min-h-[66px] max-h-[100px] grow px-5 z-10">-->
             <header class="flex items-center justify-between text-neutral-50 min-h-[66px] max-h-[100px] grow px-5 z-10">
 <!--                <span class="title p-2">[bc]</span>-->
-                <span class="text-white/50 drop-shadow-lg text-5xl max-md:text-3xl p-2">[bc]</span>
+<!--                TODO: Remove max-md:hidden once tpot 10 releases-->
+                <span class="text-white/50 drop-shadow-lg text-5xl max-md:text-3xl md:p-2 max-md:hidden">[bc]</span>
+                <div class="flex flex-col gap-0">
+                    <span class="text-white drop-shadow-lg text-xl max-md:text-xs">help wanted: tpot related backgrounds for the bar graph.</span>
+                    <span class="text-white drop-shadow-lg text-xl max-md:text-xs">dm @zelo101 on discord! you will be credited on site.</span>
+                </div>
                 <section class="flex justify-around grow">
 
 <!--                <span class="text-orange-500 text-xl font-bold">These results are UNCONFIRMED and will differ from the official count!</span>-->
 <!--                <span class="text-4xl text-red-600" style="font-family: 'Comic Sans MS', 'Comic Neue', sans-serif;">unofficial unconfirmed!!1!</span>-->
         <!--        <span class="text-xl text-orange-400">WIP mod of figgyc bracketcounter</span>-->
         <!--        <a href="https://github.com/zolo101/bracketcounter" class="text-xl !text-yellow-400 hover:underline">(Github Repo)</a>-->
-                    <span class="bg-white/10 text-4xl max-md:text-3xl p-2 rounded-xl" class:end={!countdown}>{countdownText}</span>
+                    {#if !accessibility.noTimer}
+                        <span class="bg-white/10 text-4xl max-md:text-3xl p-2 rounded-xl" class:end={!countdown}>{countdownText}</span>
+                    {/if}
 <!--                <span class="text-xl text-green-400">For now, close contestants are rounded to discourage alt voting</span>-->
 <!--                <Live/>-->
 <!--                    <section class="flex justify-center text-xl gap-2">-->
