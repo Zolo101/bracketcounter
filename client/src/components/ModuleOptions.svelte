@@ -48,25 +48,28 @@
 </script>
 
 <!-- Desktop dropdown -->
-<div transition:fly={{y: 100}} class="relative rounded backdrop-blur-md bg-green-400/50 flex flex-col gap-2 right-20 p-2 outline outline-2 outline-green-300 shadow-xl">
-    {#each statModules as option}
-        <button on:click={() => choose(option)} class="option">{option}</button>
-    {/each}
+<div transition:fly={{y: 100}} class="bg-teal-950/90 flex flex-col justify-center gap-5 p-8 text-2xl rounded-t rounded-br shadow-xl">
+    <span class="text-white items-center">Select visualisation</span>
+    <section class="grid grid-cols-3 gap-2">
+        {#each statModules as option}
+            <button on:click={() => choose(option)}>{option}</button>
+        {/each}
+    </section>
 
     {#if $child.depth < 3}
-        <br>
-        <button on:click={() => split(DesktopDirection.Horizontal)} class="!text-blue-400 option">Split Horizontally</button>
-        <button on:click={() => split(DesktopDirection.Vertical)} class="!text-blue-400 option">Split Vertically</button>
+<!--        <br>-->
+<!--        <button on:click={() => split(DesktopDirection.Horizontal)} class="!text-blue-400 option">Split Horizontally</button>-->
+<!--        <button on:click={() => split(DesktopDirection.Vertical)} class="!text-blue-400 option">Split Vertically</button>-->
 <!--        <button on:click={remove} class="!text-red-300 option hover:!bg-red-400/40">Delete</button>-->
     {/if}
 </div>
 
 <style>
     button {
-        @apply bg-black/40 rounded px-10 py-5 transition-colors;
+        @apply bg-neutral-200 rounded h-40 transition-colors;
     }
 
     button:hover {
-        @apply bg-black/60;
+        @apply bg-neutral-400;
     }
 </style>

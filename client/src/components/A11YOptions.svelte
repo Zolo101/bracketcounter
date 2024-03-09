@@ -3,17 +3,19 @@
     import { toggleAccessibilityOption } from "$lib/a11y";
 </script>
 
-<div class="relative bg-black flex flex-col gap-1 text-2xl right-20 p-1 shadow-2xl">
-        <button on:click={() => toggleAccessibilityOption(0)} class="option">Reduce Motion: {!!$accessibilityWritable.reduced}</button>
-<!--        <button on:click={() => toggleAccessibilityOption(1)} class="option">High Contrast: {!!$accessibilityWritable.highContrast}</button>-->
-</div>
+<section class="flex flex-col justify-center bg-black rounded-t rounded-br p-5 gap-5 text-2xl shadow-2xl">
+    <span class="text-white">Accessibility Settings</span>
+    <button on:click={() => toggleAccessibilityOption(0)}>Reduce Motion: {!!$accessibilityWritable.reduced}</button>
+    <button on:click={() => toggleAccessibilityOption(1)}>No Backgrounds: {!!$accessibilityWritable.noBackground}</button>
+<!--        <button on:click={() => toggleAccessibilityOption(2)} class="option">High Contrast: {!!$accessibilityWritable.highContrast}</button>-->
+</section>
 
 <style>
     button {
-        @apply bg-white/30 px-10 py-5;
+        @apply font-bold bg-white px-10 py-5 transition-colors;
     }
 
     button:hover {
-        @apply bg-white/20;
+        @apply bg-white/50 outline outline-blue-100;
     }
 </style>
