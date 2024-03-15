@@ -256,7 +256,7 @@ export const graphModule: StatModule = {
         // viewport.addChild(...voteLineGraphics, ...voteLineNumberText)
         // app.stage.addChild(...voteLineGraphics, ...voteLineNumberText)
         // warning: HARDCODED
-        for (let j = 0; j < 5; j++) {
+        for (let j = 0; j < 9; j++) {
             const line = new Line(j, app, viewport)
             lines.push(line)
             // line.onTick(stats)

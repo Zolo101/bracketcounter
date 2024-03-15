@@ -29,10 +29,10 @@ const whatTeam = (key: string) => {
         case "b":
         case "c":
         case "d":
-        case "e":
-        case "f":
             return false;
 
+        case "e":
+        case "f":
         case "g":
         case "h":
         case "i":
@@ -230,13 +230,15 @@ class Bar {
         this.icon.mask = this.mask
 
         // TODO: Put in another function?
-        const backgroundColour = "#FDC900"
+        const color = !whatTeam(u.key) ? "#FDC900" : "#fd4f4f"
+        const backgroundColour = color
 
         this.barGraphic.clear()
         this.barGraphic.beginFill(backgroundColour)
         this.barGraphic.drawRect(5, 0, 3, height)
 
         this.barGraphic.beginFill(u.colour)
+        // this.barGraphic.beginFill("#555555")
         this.barGraphic.drawRect(x, 0, width, height)
         this.barGraphic.beginTextureFill({
             color: u.colour,
@@ -266,25 +268,26 @@ class Bar {
         this.text.name.width = clamp((width - 10) * 0.95, 50, 160)
         this.text.name.height = this.barGraphic.height
 
+        this.text.leaderboardIndex.text = ordinal(u.placement + 1)
         if (this.closeCall) {
-            this.text.leaderboardIndex.text = "--"
+            // this.text.leaderboardIndex.text = "--"
             this.text.votes.text = "~" + displayVotes
             this.text.votes.setTransform(x + 10 + width + 10, 2)
         } else {
-            this.text.leaderboardIndex.text = ordinal(u.placement + 1)
             this.text.leaderboardIndexVoteLetter.text = `[${u.key.toUpperCase()}]`
             this.text.leaderboardIndexVoteLetter.style.fill = u.colour
             this.text.votes.setTransform(x + 10 + width, -4)
-            this.text.votes.text = displayVotes
+            this.text.votes.text = ~~(displayVotes * 6.5)
             this.text.votes.style.fill = ["#ffffff", u.colour]
             // voteLineBarVoteCountTextInfo[i].text = `Avg gain: + ${getAverageGainPerMinute(lastTimesVotes[key])}, Since Last Refresh: + ${lastTimesVotes[key].at(-1)}`
             this.text.votesInfo.text = `+${getLatestGain(lastTimesVotes[u.key])}, ~${getAverageGainPerMinute(lastTimesVotes[u.key]).toPrecision(2)} per minute`
             this.text.votesInfo.setTransform(x + 10 + width, 32)
         }
 
-        if (dangerZone > u.votes) {
-            this.text.leaderboardIndex.style.fill = "#ff9090"
-        }
+        // if (dangerZone > u.votes) {
+        //     this.text.leaderboardIndex.style.fill = "#ff9090"
+        // }
+
 
         this.icon.position.x = x + width - 100
         this.text.leaderboardIndex.setTransform(x - 80, 8)
@@ -499,7 +502,7 @@ export const barModule: StatModule = {
         app.stage.addChild(background2, background, bar, creditBackground, credit);
 
         // hardcode for now
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 9; i++) {
             bars.push(new Bar(i, app))
         }
         // app.stage.addChild(text);

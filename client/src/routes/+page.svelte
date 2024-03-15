@@ -84,9 +84,11 @@
 <!--                <span class="title p-2">[bc]</span>-->
 <!--                TODO: Remove max-md:hidden once tpot 10 releases-->
                 <span class="text-white/50 drop-shadow-lg text-5xl max-md:text-3xl md:p-2 max-md:hidden">[bc]</span>
-                <div class="flex flex-col gap-0">
-                    <span class="text-white drop-shadow-lg text-xl max-md:text-xs">help wanted: tpot related backgrounds for the bar graph.</span>
-                    <span class="text-white drop-shadow-lg text-xl max-md:text-xs">dm @zelo101 on discord! you will be credited on the site.</span>
+                <div class="flex flex-col bg-black p-2 font-bold text-white text-xl max-md:text-xs gap-0">
+                    <span class="drop-shadow-lg">these results have been crudely extrapolated from youtube comments, which aren't accurate at all.</span>
+<!--                    <span class="text-white drop-shadow-lg text-xl max-md:text-xs">help wanted: tpot related backgrounds for the bar graph.</span>-->
+<!--                    <span class="text-white drop-shadow-lg text-xl max-md:text-xs">dm @zelo101 on discord! you will be credited on the site.</span>-->
+                    <span class="drop-shadow-lg">this is only to get a general feel of who is most likely to be safe</span>
                 </div>
                 <section class="flex justify-around grow">
 
@@ -95,7 +97,7 @@
         <!--        <span class="text-xl text-orange-400">WIP mod of figgyc bracketcounter</span>-->
         <!--        <a href="https://github.com/zolo101/bracketcounter" class="text-xl !text-yellow-400 hover:underline">(Github Repo)</a>-->
                     {#if !accessibility.noTimer}
-                        <span class="bg-white/10 text-4xl max-md:text-3xl p-2 rounded-xl" class:end={!countdown}>{countdownText}</span>
+<!--                        <span class="bg-white/10 text-4xl max-md:text-3xl p-2 rounded-xl" class:end={!countdown}>{countdownText}</span>-->
                     {/if}
 <!--                <span class="text-xl text-green-400">For now, close contestants are rounded to discourage alt voting</span>-->
 <!--                <Live/>-->

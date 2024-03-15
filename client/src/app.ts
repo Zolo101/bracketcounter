@@ -44,7 +44,7 @@ export enum Status {
     ServerOffline
 }
 export const status = writable<Status>(Status.ServerOffline)
-const ID = "ve8tha1rbkqhjyk"
+const ID = "c7qpatzs5iizr7n"
 export const statModules = [
     "Bar",
     // "Realtime Graph",
