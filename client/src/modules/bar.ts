@@ -286,7 +286,7 @@ class Bar {
             this.text.leaderboardIndexVoteLetter.text = `[${u.key.toUpperCase()}]`;
             this.text.leaderboardIndexVoteLetter.style.fill = u.colour;
             this.text.votes.setTransform(x + 10 + width, -4);
-            this.text.votes.text = ~~(displayVotes * 6.5);
+            this.text.votes.text = displayVotes;
             this.text.votes.style.fill = ["#ffffff", u.colour];
             // voteLineBarVoteCountTextInfo[i].text = `Avg gain: + ${getAverageGainPerMinute(lastTimesVotes[key])}, Since Last Refresh: + ${lastTimesVotes[key].at(-1)}`
             this.text.votesInfo.text = `+${getLatestGain(
