@@ -157,14 +157,14 @@ class Bar {
         // const u = getUseful(this.app, stats, this.index)
         // const y = 20 + (u.placement * (u.appHeight / u.len + 20))
 
-        // this.icon.texture = await Assets.load(`characters/${name}.webp`);
-        // this.icon.roundPixels = false
+        this.icon.texture = await Assets.load(`characters/${name}.webp`);
+        this.icon.roundPixels = false;
         this.icon.height = 128;
         this.icon.width =
             this.icon.texture.width *
             (this.icon.height / this.icon.texture.height);
         this.icon.alpha = 0.5;
-        this.icon.position.y = 32;
+        this.icon.position.y = -32;
 
         // const colorMatrix = new ColorMatrixFilter()
         // colorMatrix.desaturate()
@@ -175,30 +175,30 @@ class Bar {
         this.barGraphic.eventMode = "dynamic";
         this.barGraphic.on("mouseover", () => {
             // animate icon bouncing up
-            anime({
-                targets: this.icon,
-                y: this.icon.y - 20,
-                alpha: 1,
-                duration: getDuration(200),
-                easing: "easeInOutBack",
-                complete: () => (this.icon.position.y = 12),
-                // update: () => this.icon.position.y = wrap.y
-            });
+            // anime({
+            //     targets: this.icon,
+            //     y: this.icon.y - 20,
+            //     alpha: 1,
+            //     duration: getDuration(200),
+            //     easing: "easeInOutBack",
+            //     complete: () => (this.icon.position.y = 12),
+            //     // update: () => this.icon.position.y = wrap.y
+            // });
             // this.icon.alpha = 1
             // this.icon.filters = []
         });
         this.barGraphic.on("mouseout", () => {
             // animate icon bouncing down
-            anime({
-                targets: this.icon,
-                y: this.icon.y + 20,
-                duration: getDuration(200),
-                alpha: 0.5,
-                easing: "easeInOutBack",
-                complete: () => (this.icon.position.y = 32),
-                // update: () => this.icon.position.y = wrap.y
-            });
-            this.icon.alpha = 0.5;
+            // anime({
+            //     targets: this.icon,
+            //     y: this.icon.y + 20,
+            //     duration: getDuration(200),
+            //     alpha: 0.5,
+            //     easing: "easeInOutBack",
+            //     complete: () => (this.icon.position.y = 32),
+            //     // update: () => this.icon.position.y = wrap.y
+            // });
+            // this.icon.alpha = 0.5;
             // this.icon.filters = [colorMatrix]
         });
     }
